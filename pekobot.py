@@ -5,6 +5,8 @@ import os
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+from asyncio import sleep
+
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -69,8 +71,22 @@ async def on_message(message):
     if 'haha' in message.content:
         response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️"
         await message.channel.send(response)
-        channel= client.get_channel(818414256612573194)
-        await channel.send("!p pekora laugh")
+        """ Gets author's vc if they are in one  """
+        try:
+            voice_channel = message.author.voice.channel
+        except AttributeError:
+            voice_channel = None
+        channel = None
+        if voice_channel != None:
+            channel = voice_channel.name
+            vc = await voice_channel.connect()
+            vc.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="C:/Users/Bowen/Desktop/pekobot/haha.mp3"))
+            while vc.is_playing():
+                await sleep(1)
+            await vc.disconnect()
+        else:
+            print(str(message.author.name) + " is not in a channel.")
+        
 
     c_channel = discord.utils.get(message.guild.text_channels, name='general')
     """ Returns a list of limit 2 messages """
