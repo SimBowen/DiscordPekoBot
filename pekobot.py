@@ -89,7 +89,9 @@ async def on_message(message):
             print(str(message.author.name) + " is not in a channel.")
     
     if 'yep' in message.content:
-        await message.add_reaction(':YEPCOCK:')
+        id = 818453695284641822
+        emoji = client.get_emoji(id)
+        await message.add_reaction(emoji)
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
