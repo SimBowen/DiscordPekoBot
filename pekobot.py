@@ -76,7 +76,7 @@ async def on_message(message):
             haha = ['haha1.mp3', 'haha2.mp3', 'haha3.mp3', 'haha4.mp3', 'haha5.mp3', 'haha6.mp3', 'haha7.mp3']
             channel = voice_channel.name
             vc = await voice_channel.connect()
-            file = 'sound/' + random.choice(haha)
+            file = 'sound\\' + random.choice(haha)
             vc.play(discord.FFmpegPCMAudio(file))
             while vc.is_playing():
                 await sleep(1)
