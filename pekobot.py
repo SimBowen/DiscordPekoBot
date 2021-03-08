@@ -1,5 +1,7 @@
 # bot.py
 
+""" git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
+
 import os
 import discord
 from dotenv import load_dotenv
@@ -79,6 +81,7 @@ async def on_message(message):
             print(str(message.author.name) + " is not in a channel.")
     
     if 'yep' in message.content:
+        """ Find the correct emoji id """
         id = 792035440428974111
         emoji = client.get_emoji(id)
         await message.add_reaction(emoji)
