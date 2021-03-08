@@ -87,6 +87,9 @@ async def on_message(message):
             await vc.disconnect()
         else:
             print(str(message.author.name) + " is not in a channel.")
+    
+    if 'yep' in message:
+        await message.add_reaction(':YEPCOCK:')
         
 
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
