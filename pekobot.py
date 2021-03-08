@@ -1,7 +1,6 @@
 # bot.py
-from asyncio.windows_events import NULL
-import os
 
+import os
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -92,12 +91,8 @@ async def on_message(message):
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
     if messages[0].content == '!peko':
-        if(messages[1] == NULL):
-            print('nothing')
-            return
-        else:
-            print(pekofy(messages[1].content))
-            await message.channel.send(pekofy(messages[1].content))
+        print(pekofy(messages[1].content))
+        await message.channel.send(pekofy(messages[1].content))
 
 
 
