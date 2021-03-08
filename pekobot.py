@@ -12,10 +12,12 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
-""" Intenets are required for bot to see memebrs in the server as of latest discord.py """
+""" Intents are required for bot to see memebrs in the server as of latest discord.py """
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
+
+bot = commands.Bot(command_prefix='!')
 
 
 """ Upon client startup event run the following code """
@@ -87,12 +89,19 @@ async def on_message(message):
             print(str(message.author.name) + " is not in a channel.")
         
 
-    c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
-    """ Returns a list of limit 2 messages """
+"""     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     messages = await c_channel.history(limit=2).flatten()
     if messages[0].content == '!peko':
         print(pekofy(messages[1].content))
-        await message.channel.send(pekofy(messages[1].content))
+        await message.channel.send(pekofy(messages[1].content)) """
+
+
+@bot.command(name='!peko')
+async def pekofy(ctx):
+    c_channel = discord.utils.get(ctx.guild.text_channels, name='novalty')
+    messages = await c_channel.history(limit=2).flatten()
+    response = pekofy(messages[1].content)
+    await ctx.send(response)
 
 
 
