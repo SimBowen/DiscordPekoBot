@@ -80,7 +80,7 @@ async def on_message(message):
         if voice_channel != None:
             channel = voice_channel.name
             vc = await voice_channel.connect()
-            vc.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="C:/Users/Bowen/Desktop/pekobot/haha.mp3"))
+            vc.play(discord.FFmpegPCMAudio(f'haha.mp3'))
             while vc.is_playing():
                 await sleep(1)
             await vc.disconnect()
