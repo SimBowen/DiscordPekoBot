@@ -41,10 +41,14 @@ async def on_ready():
     members = '\n - '.join([member.name for member in guild.members])
     print(f'Guild Members:\n - {members}')
 
+    
+
 
 @client.event
 async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
+    for emoji in client.emojis:
+        print("Name:", emoji.name + ",", "ID:", emoji.id)
 
 """ Triggers upon memeber join event """
 """ @client.event
@@ -89,7 +93,7 @@ async def on_message(message):
             print(str(message.author.name) + " is not in a channel.")
     
     if 'yep' in message.content:
-        id = 818453695284641822
+        id = 792035440428974111
         emoji = client.get_emoji(id)
         await message.add_reaction(emoji)
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
