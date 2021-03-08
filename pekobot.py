@@ -41,14 +41,6 @@ async def on_ready():
     members = '\n - '.join([member.name for member in guild.members])
     print(f'Guild Members:\n - {members}')
 
-    
-
-
-@client.event
-async def on_ready():
-    print(f'{client.user.name} has connected to Discord!')
-    for emoji in client.emojis:
-        print("Name:", emoji.name + ",", "ID:", emoji.id)
 
 """ Triggers upon memeber join event """
 """ @client.event
