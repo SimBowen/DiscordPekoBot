@@ -46,12 +46,12 @@ async def on_ready():
     print(f'{client.user.name} has connected to Discord!')
 
 """ Triggers upon memeber join event """
-@client.event
+""" @client.event
 async def on_member_join(member):
     await member.create_dm()
     await member.dm_channel.send(
         f'こんにちは {member.name}, いらっしゃいぺこ!'
-    )
+    ) """
 
 """ Triggers upon message and checks current message """
 
@@ -88,7 +88,7 @@ async def on_message(message):
             print(str(message.author.name) + " is not in a channel.")
         
 
-    c_channel = discord.utils.get(message.guild.text_channels, name='general')
+    c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
     if messages[0].content == '!peko':
