@@ -12,10 +12,12 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
-""" Intenets are required for bot to see memebrs in the server as of latest discord.py """
+""" Intets are required for bot to see memebrs in the server as of latest discord.py """
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
+
+bot = commands.Bot(command_prefix='!')
 
 
 """ Upon client startup event run the following code """
@@ -90,7 +92,7 @@ async def on_message(message):
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
-    if messages[0].content == '!peko':
+    if message.content == '!peko':
         print(pekofy(messages[1].content))
         await message.channel.send(pekofy(messages[1].content))
 
