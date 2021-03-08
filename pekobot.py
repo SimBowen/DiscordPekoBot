@@ -99,12 +99,29 @@ async def on_message(message):
             await vc.disconnect()
         else:
             print(str(message.author.name) + " is not in a channel.")
+        
+    if 'ehe' in message.content:
+        try:
+            voice_channel = message.author.voice.channel
+        except AttributeError:
+            voice_channel = None
+        channel = None
+        if voice_channel != None:
+            channel = voice_channel.name
+            vc = await voice_channel.connect()
+            vc.play(discord.FFmpegPCMAudio('ehe.mp3'))
+            while vc.is_playing():
+                await sleep(1)
+            await vc.disconnect()
+        else:
+            print(str(message.author.name) + " is not in a channel.")
     
     if 'yep' in message.content:
         """ Find the correct emoji id """
         id = 792035440428974111
         emoji = client.get_emoji(id)
         await message.add_reaction(emoji)
+        
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
