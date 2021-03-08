@@ -77,7 +77,23 @@ async def on_message(message):
             channel = voice_channel.name
             vc = await voice_channel.connect()
             file = random.choice(haha)
+            print(file)
             vc.play(discord.FFmpegPCMAudio(file))
+            while vc.is_playing():
+                await sleep(1)
+            await vc.disconnect()
+        else:
+            print(str(message.author.name) + " is not in a channel.")
+    if 'horny' in message.content:
+        try:
+            voice_channel = message.author.voice.channel
+        except AttributeError:
+            voice_channel = None
+        channel = None
+        if voice_channel != None:
+            channel = voice_channel.name
+            vc = await voice_channel.connect()
+            vc.play(discord.FFmpegPCMAudio('horny.mp3'))
             while vc.is_playing():
                 await sleep(1)
             await vc.disconnect()
