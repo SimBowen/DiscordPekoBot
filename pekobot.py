@@ -7,6 +7,7 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 from asyncio import sleep
+import random
 
 load_dotenv()
 
@@ -71,8 +72,10 @@ async def on_message(message):
             voice_channel = None
         channel = None
         if voice_channel != None:
+            haha = ['haha1.mp3', 'haha2.mp3', 'haha3.mp3', 'haha4.mp3', 'haha5.mp3', 'haha6.mp3', 'haha7.mp3']
             channel = voice_channel.name
             vc = await voice_channel.connect()
+            file = random
             vc.play(discord.FFmpegPCMAudio(f'haha.mp3'))
             while vc.is_playing():
                 await sleep(1)
