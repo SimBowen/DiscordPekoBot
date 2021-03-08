@@ -90,8 +90,6 @@ async def on_message(message):
     
     if 'yep' in message:
         await message.add_reaction(':YEPCOCK:')
-        
-
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
