@@ -3,8 +3,6 @@
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
 
 import asyncio
-from asyncio.tasks import current_task
-
 from discord.errors import ClientException
 import os
 import discord
