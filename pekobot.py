@@ -40,29 +40,6 @@ async def on_ready():
         f'{client.user} is connected to the following guild:\n'
         f'{guild.name}(id: {guild.id})\n'
     )
-"""     members = '\n - '.join([member.name for member in guild.members])
-    print(f'Guild Members:\n - {members}') """
-
-
-""" Triggers upon memeber join event """
-""" @client.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(
-        f'こんにちは {member.name}, いらっしゃいぺこ!'
-    ) """
-
-""" Triggers upon message and checks current message """
-
-""" @client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    if message.content == '!peko':
-        test = pekofy(message.author.lastMessage.content)
-        response = pekofy(previous_message)
-        print(response)
-        await message.channel.send(response) """
 
 """ Triggers on message, checks if there were previous messages to parse."""
 @client.event
@@ -152,7 +129,7 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel,message.channel, player])
-        await message.channel.send(highlight('Song added to list:]\n' + player.title)
+        await message.channel.send(highlight('Song added to list:]\n' + player.title))
 
 
     if message.content[0:6] == '!pekoq':
@@ -264,6 +241,7 @@ def search_parsing(input):
 def highlight(input):
     word = input
     examples = f"""``` word ```"""
+    return examples
 
 
 client.run(TOKEN)
