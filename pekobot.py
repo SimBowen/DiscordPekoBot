@@ -46,7 +46,7 @@ async def on_ready():
 async def on_message(message):
     if 'haha' in message.content.lower():
         """ response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️" """
-        emoji = ['↗️','↘️',':arrow_lower_left:', ':arrow_upper_left:']
+        emoji = ['↗️','↘️','↙️', '↖️']
         for emote in emoji:
             await message.add_reaction(emote)
         """ await message.channel.send(response) """
