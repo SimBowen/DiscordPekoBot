@@ -3,6 +3,7 @@
 #Testing
 
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
+""" Testing """
 
 import asyncio
 from discord.errors import ClientException
@@ -42,36 +43,13 @@ async def on_ready():
         f'{client.user} is connected to the following guild:\n'
         f'{guild.name}(id: {guild.id})\n'
     )
-"""     members = '\n - '.join([member.name for member in guild.members])
-    print(f'Guild Members:\n - {members}') """
-
-
-""" Triggers upon memeber join event """
-""" @client.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(
-        f'こんにちは {member.name}, いらっしゃいぺこ!'
-    ) """
-
-""" Triggers upon message and checks current message """
-
-""" @client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    if message.content == '!peko':
-        test = pekofy(message.author.lastMessage.content)
-        response = pekofy(previous_message)
-        print(response)
-        await message.channel.send(response) """
 
 """ Triggers on message, checks if there were previous messages to parse."""
 @client.event
 async def on_message(message):
     if 'haha' in message.content.lower():
         """ response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️" """
-        emoji = ['↗️','↘️',':arrow_lower_left:', ':arrow_upper_left:']
+        emoji = ['↗️','↘️','↙️', '↖️']
         for emote in emoji:
             await message.add_reaction(emote)
         """ await message.channel.send(response) """
@@ -154,7 +132,8 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel,message.channel, player])
-        await message.channel.send(f'Song added to list:\n' + player.title)
+        await message.channel.send('Song added to list:]\n' + player.title)
+
 
     if message.content[0:6] == '!pekoq':
         videos = '\n - '.join([video[2].title for video in yt_list])
@@ -261,6 +240,7 @@ def search_parsing(input):
     html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search_keyword)
     video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
     return "https://www.youtube.com/watch?v=" + video_ids[0]
+
 
 
 client.run(TOKEN)
