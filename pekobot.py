@@ -119,19 +119,19 @@ async def on_message(message):
     if message.content[0:6] == '!pekop':
         url = ''
         input = message.content[7:]
-        if 'youtube.com' or 'https://www.youtube.com' in input:
+        if input[0:11] == 'youtube.com':
             url = message.content[7:]
         else:
             url = search_parsing(message.content[7:])
+    
         print(url)
         player = await YTDLSource.from_url(url, loop=client.loop)
         try:
             voice_channel = message.author.voice.channel
         except AttributeError:
             voice_channel = None
-        yt_list.append([voice_channel, message.channel, player])
-
-        await message.channel.send('Song added to list:\n' + player.title)
+        yt_list.append([voice_channel,message.channel, player])
+        await message.channel.send(f'Song added to list:\n' + player.title)
         await message.channel.send(url)
 
 
