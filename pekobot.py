@@ -12,6 +12,7 @@ from discord.ext.tasks import loop
 from asyncio import sleep
 import random
 import youtube_dl
+from youtube_dl import YoutubeDL
 import urllib.request
 import urllib.parse
 import re
@@ -69,6 +70,7 @@ async def on_message(message):
             await vc.disconnect()
         else:
             print(str(message.author.name) + " is not in a channel.")
+            
     if 'horny' in message.content.lower():
         try:
             voice_channel = message.author.voice.channel
@@ -128,8 +130,11 @@ async def on_message(message):
             voice_channel = message.author.voice.channel
         except AttributeError:
             voice_channel = None
-        yt_list.append([voice_channel,message.channel, player])
-        await message.channel.send('Song added to list:\n' + player.title)
+        yt_list.append([voice_channel, message.channel, player])
+        info = ytdl.extract_info(url, download=False)
+        formats = info['formats']
+        await message.channel.send('Song added to list:\n' + player.title + ', Duration: ' + format['duration'])
+        await message.channel.send(url)
 
 
     if message.content[0:6] == '!pekoq':
