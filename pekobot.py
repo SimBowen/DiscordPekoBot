@@ -119,7 +119,7 @@ async def on_message(message):
     if message.content[0:6] == '!pekop':
         url = ''
         input = message.content[7:]
-        if input[0:11] == 'youtube.com':
+        if 'youtube.com' or 'https://www.youtube.com' in input:
             url = message.content[7:]
         else:
             url = search_parsing(message.content[7:])
@@ -133,7 +133,8 @@ async def on_message(message):
         yt_list.append([voice_channel, message.channel, player])
         info = ytdl.extract_info(url, download=False)
         formats = info['formats']
-        await message.channel.send('Song added to list:\n' + player.title + ', Duration: ' + formats['duration'])
+        format = formats[0]
+        await message.channel.send('Song added to list:\n' + player.title + ', Duration: ' + format['duration'])
         await message.channel.send(url)
 
 
