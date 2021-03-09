@@ -1,5 +1,7 @@
 # bot.py
 
+#Testing
+
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
 
 import asyncio
@@ -80,7 +82,7 @@ async def on_message(message):
             voice_channel = None
         channel = None
         if voice_channel != None:
-            
+
             haha = ['haha1.mp3', 'haha2.mp3', 'haha3.mp3', 'haha4.mp3', 'haha5.mp3', 'haha6.mp3', 'haha7.mp3']
             channel = voice_channel.name
             vc = await voice_channel.connect()
@@ -107,7 +109,7 @@ async def on_message(message):
             await vc.disconnect()
         else:
             print(str(message.author.name) + " is not in a channel.")
-        
+
     if 'ehe' in message.content.lower():
         try:
             voice_channel = message.author.voice.channel
@@ -123,20 +125,20 @@ async def on_message(message):
             await vc.disconnect()
         else:
             print(str(message.author.name) + " is not in a channel.")
-    
+
     if 'yep' in message.content.lower():
         """ Find the correct emoji id """
         id = 792035440428974111
         emoji = client.get_emoji(id)
         await message.add_reaction(emoji)
-        
+
     c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
     """ Returns a list of limit 2 messages """
     messages = await c_channel.history(limit=2).flatten()
     if message.content == '!peko':
         print(pekofy(messages[1].content))
         await message.channel.send(pekofy(messages[1].content))
-    
+
     if message.content[0:6] == '!pekop':
         url = ''
         input = message.content[7:]
@@ -144,7 +146,7 @@ async def on_message(message):
             url = message.content[7:]
         else:
             url = search_parsing(message.content[7:])
-    
+
         print(url)
         player = await YTDLSource.from_url(url, loop=client.loop)
         try:
@@ -157,13 +159,13 @@ async def on_message(message):
     if message.content[0:6] == '!pekoq':
         videos = '\n - '.join([video[2].title for video in yt_list])
         await message.channel.send(f'Playlist:\n - {videos}')
-    
+
     if message.content[0:6] == '!pekos':
         for x in client.voice_clients:
                 return await x.disconnect()
         yt_list.pop(0)
-    
-    
+
+
 
 
 
@@ -232,7 +234,7 @@ ffmpeg_options = {
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-        
+
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
