@@ -12,6 +12,9 @@ from discord.ext.tasks import loop
 from asyncio import sleep
 import random
 import youtube_dl
+import urllib.request
+import urllib.parse
+import re
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -132,7 +135,13 @@ async def on_message(message):
         await message.channel.send(pekofy(messages[1].content))
     
     if message.content[0:6] == '!pekop':
-        url = message.content[7:]
+        url = ''
+        input = message.content[7:]
+        if input[0:11] == 'youtube.com':
+            url = message.content[7:]
+        else:
+            url = search_parsing(message.content[7:])
+    
         print(url)
         player = await YTDLSource.from_url(url, loop=client.loop)
         try:
@@ -241,6 +250,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+
+def search_parsing(input):
+    search_keyword=input.replace(" ", "+")
+    html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search_keyword)
+    video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+    return "https://www.youtube.com/watch?v=" + video_ids[0]
 
 
 client.run(TOKEN)
