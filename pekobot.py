@@ -134,7 +134,7 @@ async def on_message(message):
 
     if message.content[0:6] == '!pekoq':
         videos = '\n - '.join([video[2].title for video in yt_list])
-        await message.channel.send(f'Playlist:\n - {videos}')
+        await message.channel.send(f'Playlist:\n  {videos}')
 
     if message.content[0:6] == '!pekos':
         for x in client.voice_clients:
