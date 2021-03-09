@@ -133,7 +133,7 @@ async def on_message(message):
         yt_list.append([voice_channel, message.channel, player])
         info = ytdl.extract_info(url, download=False)
         formats = info['formats']
-        await message.channel.send('Song added to list:\n' + player.title + ', Duration: ' + format['duration'])
+        await message.channel.send('Song added to list:\n' + player.title + ', Duration: ' + formats['duration'])
         await message.channel.send(url)
 
 
