@@ -1,6 +1,7 @@
 # bot.py
 
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
+""" Testing """
 
 import asyncio
 from discord.errors import ClientException
