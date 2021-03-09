@@ -143,6 +143,8 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel,message.channel, player])
+        videos = '\n - '.join([video[2].title for video in yt_list])
+        print(f'Playlist:\n - {videos}')
 
 
 
