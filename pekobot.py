@@ -24,8 +24,6 @@ intents.members = True
 client = discord.Client(intents=intents)
 
 yt_list = []
-current_song = ''
-
 
 """ Upon client startup event run the following code """
 @client.event
@@ -145,7 +143,6 @@ async def on_message(message):
         await message.channel.send(f'Song added to list:\n' + player.title)
 
     if message.content[0:6] == '!pekoq':
-        await message.channel.send(f'Current Song:\n' + current_song)
         videos = '\n - '.join([video[2].title for video in yt_list])
         await message.channel.send(f'Playlist:\n - {videos}')
 
@@ -169,11 +166,10 @@ async def yt_player():
                 return
             vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
             await current_track[1].send('Now playing: {}'.format(current_track[2].title))
-            current_track = current_track[2].title
-            yt_list.pop(0)
             while vc.is_playing():
                     await sleep(1)
             await vc.disconnect()
+            yt_list.pop(0)
 
 yt_player.start()
 
