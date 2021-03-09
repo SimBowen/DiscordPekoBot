@@ -152,11 +152,12 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel,message.channel, player])
-        await message.channel.send(f'Song added to list:\n' + player.title)
+        await message.channel.send(highlight('Song added to list:]\n' + player.title)
+
 
     if message.content[0:6] == '!pekoq':
         videos = '\n - '.join([video[2].title for video in yt_list])
-        await message.channel.send(f'Playlist:\n - {videos}')
+        await message.channel.send(highlight(f'Playlist:\n  {videos}'))
     
     if message.content[0:6] == '!pekos':
         for x in client.voice_clients:
@@ -184,7 +185,7 @@ async def yt_player():
                 print(yt_list)
                 return
             vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-            await current_track[1].send('Now playing: {}'.format(current_track[2].title))
+            await current_track[1].send(highlight('Now playing: {}'.format(current_track[2].title)))
             while vc.is_playing():
                     await sleep(1)
             await vc.disconnect()
@@ -259,6 +260,10 @@ def search_parsing(input):
     html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search_keyword)
     video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
     return "https://www.youtube.com/watch?v=" + video_ids[0]
+
+def highlight(input):
+    word = input
+    examples = f"""``` word ```"""
 
 
 client.run(TOKEN)
