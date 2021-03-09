@@ -162,7 +162,9 @@ async def yt_player():
                 print(yt_list)
                 return
             vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-            await current_track[1].send('Now playing: {}'.format(current_track[2].title))
+
+            info = ytdl.extract_info(current_track[3], download=False)
+            await current_track[1].send('Now playing: {}'.format(current_track[2].title) + ', Duration: ' + info.duration)
             await current_track[1].send('Fetched from: {}'.format(current_track[3]))
             while vc.is_playing():
                     await sleep(1)
