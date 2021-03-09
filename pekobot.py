@@ -68,8 +68,11 @@ async def on_message(message):
 @client.event
 async def on_message(message):
     if 'haha' in message.content:
-        response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️"
-        await message.channel.send(response)
+        """ response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️" """
+        emoji = ['↗️','↘️','↗️','↘️']
+        for emote in emoji:
+            await message.add_reaction(emote)
+        """ await message.channel.send(response) """
         """ Gets author's vc if they are in one  """
         try:
             voice_channel = message.author.voice.channel
