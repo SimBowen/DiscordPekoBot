@@ -131,9 +131,8 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel, message.channel, player])
-        info = ytdl.extract_info(url, download=False)
-        duration = info['duration']
-        await message.channel.send('Song added to list:\n' + player.title + ', Duration: ' + duration)
+
+        await message.channel.send('Song added to list:\n' + player.title)
         await message.channel.send(url)
 
 
