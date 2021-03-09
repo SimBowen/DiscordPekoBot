@@ -123,7 +123,6 @@ async def on_message(message):
             url = message.content[7:]
         else:
             url = search_parsing(message.content[7:])
-        await message.channel.send(url)
         print(url)
         player = await YTDLSource.from_url(url, loop=client.loop)
         try:
@@ -133,6 +132,7 @@ async def on_message(message):
         yt_list.append([voice_channel, message.channel, player])
 
         await message.channel.send('Song added to list:\n' + player.title)
+        await message.channel.send(url)
 
 
     if message.content[0:6] == '!pekoq':
