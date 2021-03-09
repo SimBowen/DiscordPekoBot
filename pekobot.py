@@ -67,7 +67,7 @@ async def on_message(message):
 """ Triggers on message, checks if there were previous messages to parse."""
 @client.event
 async def on_message(message):
-    if 'haha' in message.content:
+    if 'haha' in message.content.lower():
         """ response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️" """
         emoji = ['↗️','↘️',':arrow_lower_left:', ':arrow_upper_left:']
         for emote in emoji:
@@ -92,7 +92,7 @@ async def on_message(message):
             await vc.disconnect()
         else:
             print(str(message.author.name) + " is not in a channel.")
-    if 'horny' in message.content:
+    if 'horny' in message.content.lower():
         try:
             voice_channel = message.author.voice.channel
         except AttributeError:
@@ -108,7 +108,7 @@ async def on_message(message):
         else:
             print(str(message.author.name) + " is not in a channel.")
         
-    if 'ehe' in message.content:
+    if 'ehe' in message.content.lower():
         try:
             voice_channel = message.author.voice.channel
         except AttributeError:
@@ -124,7 +124,7 @@ async def on_message(message):
         else:
             print(str(message.author.name) + " is not in a channel.")
     
-    if 'yep' in message.content:
+    if 'yep' in message.content.lower():
         """ Find the correct emoji id """
         id = 792035440428974111
         emoji = client.get_emoji(id)
