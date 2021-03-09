@@ -129,7 +129,7 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel,message.channel, player])
-        await message.channel.send('Song added to list:]\n' + player.title)
+        await message.channel.send('Song added to list:\n' + player.title)
 
 
     if message.content[0:6] == '!pekoq':
