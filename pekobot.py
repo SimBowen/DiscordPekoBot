@@ -128,7 +128,7 @@ async def on_message(message):
             voice_channel = message.author.voice.channel
         except AttributeError:
             voice_channel = None
-        yt_list.append([voice_channel,message.channel, player, url])
+        yt_list.append([voice_channel,message.channel, player])
         await message.channel.send('Song added to list:\n' + player.title)
 
 
@@ -162,10 +162,7 @@ async def yt_player():
                 print(yt_list)
                 return
             vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-
-            info = ytdl.extract_info(current_track[3], download=False)
-            await current_track[1].send('Now playing: {}'.format(current_track[2].title) + ', Duration: ' + info.duration)
-            await current_track[1].send('Fetched from: {}'.format(current_track[3]))
+            await current_track[1].send('Now playing: {}'.format(current_track[2].title))
             while vc.is_playing():
                     await sleep(1)
             await vc.disconnect()
