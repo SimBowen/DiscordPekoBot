@@ -131,6 +131,17 @@ async def on_message(message):
             voice_channel = message.author.voice.channel
         except AttributeError:
             voice_channel = None
+        if player.seconds > 600:
+            reply = await message.reply('Are you sure peko? The duration is : [' + player.duration +']')
+            await reply.add_reaction('👍')
+            await reply.add_reaction('👎')
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == reply
+            try:
+                reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
+            except asyncio.TimeoutError:
+                await message.channel.send('Song not added peko!')
+                return
         yt_list.append([voice_channel,message.channel, player])
         await message.channel.send(f'Song added to list peko~!:\n' + player.title + ' [Duration: ' + player.duration + ']')
         await message.channel.send(url)
@@ -157,20 +168,18 @@ async def yt_player():
     if yt_list:
         current_track = yt_list[0]
         voice_channel = current_track[0]
-        channel = None
-        if voice_channel != None:
-            channel = voice_channel.name
-            try:
-                vc = await voice_channel.connect()
-            except ClientException:
-                print(yt_list)
-                return
-            vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-            await current_track[1].send('Now playing: {}'.format(current_track[2].title) + 'peko~!')
-            while vc.is_playing():
-                    await sleep(1)
-            await vc.disconnect()
-            yt_list.pop(0)
+        channel = voice_channel.name
+        try:
+            vc = await voice_channel.connect()
+        except ClientException:
+            print(yt_list)
+            return
+        vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
+        await current_track[1].send('Now playing: {}'.format(current_track[2].title) + 'peko~!')
+        while vc.is_playing():
+                await sleep(1)
+        await vc.disconnect()
+        yt_list.pop(0)
 
 yt_player.start()
 
@@ -224,6 +233,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         self.title = data.get('title')
         self.url = data.get('url')
         self.duration = duration_parsing(data.get('duration'))
+        self.seconds = data.get('duration')
 
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
