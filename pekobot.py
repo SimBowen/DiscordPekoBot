@@ -16,6 +16,7 @@ from youtube_dl import YoutubeDL
 import urllib.request
 import urllib.parse
 import re
+import datetime
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -131,13 +132,13 @@ async def on_message(message):
         except AttributeError:
             voice_channel = None
         yt_list.append([voice_channel,message.channel, player])
-        await message.channel.send(f'Song added to list:\n' + player.title)
+        await message.channel.send(f'Song added to list peko~!:\n' + player.title + ' [Duration: ' + player.duration + ']')
         await message.channel.send(url)
 
 
     if message.content[0:6] == '!pekoq':
         videos = '\n - '.join([video[2].title for video in yt_list])
-        await message.channel.send(f'Playlist:\n  {videos}')
+        await message.channel.send(f'Playlist peko~!:\n  {videos}')
 
     if message.content[0:6] == '!pekos':
         for x in client.voice_clients:
@@ -165,7 +166,7 @@ async def yt_player():
                 print(yt_list)
                 return
             vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-            await current_track[1].send('Now playing: {}'.format(current_track[2].title))
+            await current_track[1].send('Now playing: {}'.format(current_track[2].title) + 'peko~!')
             while vc.is_playing():
                     await sleep(1)
             await vc.disconnect()
@@ -222,6 +223,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         self.title = data.get('title')
         self.url = data.get('url')
+        self.duration = duration_parsing(data.get('duration'))
 
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
@@ -241,6 +243,9 @@ def search_parsing(input):
     video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
     return "https://www.youtube.com/watch?v=" + video_ids[0]
 
+
+def duration_parsing(input):
+    return str(datetime.timedelta(seconds=input))
 
 
 client.run(TOKEN)
