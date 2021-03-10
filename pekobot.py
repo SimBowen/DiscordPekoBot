@@ -175,7 +175,7 @@ async def yt_player():
             print(yt_list)
             return
         vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-        await current_track[1].send('Now playing: {}'.format(current_track[2].title) + 'peko~!')
+        await current_track[1].send('Now playing: {}'.format(current_track[2].title) + ' peko~!')
         while vc.is_playing():
                 await sleep(1)
         await vc.disconnect()
