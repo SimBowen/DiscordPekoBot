@@ -29,6 +29,7 @@ intents.members = True
 client = discord.Client(intents=intents)
 
 yt_list = []
+playlist = []
 
 """ Upon client startup event run the following code """
 @client.event
@@ -110,10 +111,11 @@ async def on_message(message):
         emoji = client.get_emoji(id)
         await message.add_reaction(emoji)
 
-    c_channel = discord.utils.get(message.guild.text_channels, name='novalty')
-    """ Returns a list of limit 2 messages """
-    messages = await c_channel.history(limit=2).flatten()
+
     if message.content == '!peko':
+        c_channel = discord.utils.get(message.guild.text_channels, name='General')
+        """ Returns a list of limit 2 messages """
+        messages = await c_channel.history(limit=2).flatten()
         print(pekofy(messages[1].content))
         await message.channel.send(pekofy(messages[1].content))
 
@@ -126,6 +128,11 @@ async def on_message(message):
             url = search_parsing(message.content[7:])
     
         print(url)
+        try:
+            voice_channel = message.author.voice.channel
+            await voice_channel.connect()
+        except:
+            pass
         player = await YTDLSource.from_url(url, loop=client.loop)
         try:
             voice_channel = message.author.voice.channel
@@ -142,19 +149,20 @@ async def on_message(message):
             except asyncio.TimeoutError:
                 await message.channel.send('Song not added peko!')
                 return
-        yt_list.append([voice_channel,message.channel, player])
+        await yt_list.put(player)
+        playlist.append(player.title)
         await message.channel.send(f'Song added to list peko~!:\n' + player.title + ' [Duration: ' + player.duration + ']')
         await message.channel.send(url)
 
 
+
     if message.content[0:6] == '!pekoq':
-        videos = '\n - '.join([video[2].title for video in yt_list])
-        await message.channel.send(f'Playlist peko~!:\n  {videos}')
+        videos = '\n'.join(video for video in playlist)
+        await message.channel.send(f'Playlist peko~!:\n{videos}')
 
     if message.content[0:6] == '!pekos':
         for x in client.voice_clients:
-                return await x.disconnect()
-        yt_list.pop(0)
+                return x.stop()
 
     if 'glasses' in message.content.lower():
         reply = await message.reply(glasses)
@@ -163,26 +171,27 @@ async def on_message(message):
 
 
 
-@loop(seconds=1)
 async def yt_player():
-    await client.wait_until_ready()
-    if yt_list:
-        current_track = yt_list[0]
-        voice_channel = current_track[0]
-        channel = voice_channel.name
-        try:
-            vc = await voice_channel.connect()
-        except ClientException:
-            print(yt_list)
-            return
-        vc.play(current_track[2], after=lambda e: print('Player error: %s' % e) if e else None)
-        await current_track[1].send('Now playing: {}'.format(current_track[2].title) + ' peko~!')
-        while vc.is_playing():
-                await sleep(1)
-        await vc.disconnect()
-        yt_list.pop(0)
+    while True:
+        voice_channel = None
+        current_track = await yt_list.get()
+        for vc in client.voice_clients:
+            voice_channel = vc
+        while voice_channel.is_playing():
+            await sleep(1)
+        voice_channel.play(current_track)
+        while voice_channel.is_playing():
+            await sleep(1)
+        playlist.pop(0)
 
-yt_player.start()
+@loop(seconds=60)
+async def yt_stopper():
+    if client.voice_clients:
+        if client.voice_clients[0].is_playing():
+                pass
+        else:
+            await client.voice_clients[0].disconnect()
+yt_stopper.start()
 
 
 
@@ -261,4 +270,6 @@ def duration_parsing(input):
 
 glasses = "I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?"
 
+
+client.loop.create_task(yt_player())
 client.run(TOKEN)
