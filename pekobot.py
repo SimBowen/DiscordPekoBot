@@ -28,7 +28,7 @@ intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 
-yt_list = []
+yt_list = asyncio.Queue()
 playlist = []
 
 """ Upon client startup event run the following code """
