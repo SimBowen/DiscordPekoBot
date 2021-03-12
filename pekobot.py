@@ -17,6 +17,8 @@ import urllib.request
 import urllib.parse
 import re
 import datetime
+from urllib.parse import parse_qs, urlparse
+import googleapiclient.discovery
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -122,24 +124,32 @@ async def on_message(message):
     if message.content[0:6] == '!pekop':
         url = ''
         input = message.content[7:]
-        if input[0:11] == 'youtube.com':
-            url = message.content[7:]
+        total_duration = 0
+        songs_to_add = []
+        player_list = []
+        if 'list' in input:
+            url = input
         else:
             url = search_parsing(message.content[7:])
-    
         print(url)
         try:
             voice_channel = message.author.voice.channel
             await voice_channel.connect()
         except:
             pass
-        player = await YTDLSource.from_url(url, loop=client.loop)
-        try:
-            voice_channel = message.author.voice.channel
-        except AttributeError:
-            voice_channel = None
-        if player.seconds > 600:
-            reply = await message.reply('Are you sure peko? The duration is : [' + player.duration +']')
+        if 'list' in url:
+            songs_to_add.extend(parse_playlist(url,20))
+            for link in songs_to_add:
+                player = await YTDLSource.from_url(link, loop=client.loop)
+                total_duration += int(player.seconds)
+                player_list.append(player)
+        else:
+            songs_to_add.append(url)
+            player = await YTDLSource.from_url(url, loop=client.loop)
+            total_duration += int(player.seconds)
+            player_list.append(player)
+        if total_duration > 600:
+            reply = await message.reply('Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']')
             await reply.add_reaction('👍')
             await reply.add_reaction('👎')
             def check(reaction, user):
@@ -149,10 +159,12 @@ async def on_message(message):
             except asyncio.TimeoutError:
                 await message.channel.send('Song not added peko!')
                 return
-        await yt_list.put(player)
-        playlist.append(player.title)
-        await message.channel.send(f'Song added to list peko~!:\n' + player.title + ' [Duration: ' + player.duration + ']')
-        await message.channel.send(url)
+        for item in player_list:
+            await yt_list.put(item)
+            playlist.append(item.title)
+        if player_list.count == 1:
+            await message.channel.send(f'Song added to list peko~!:\n' + player_list[0].title + ' [Duration: ' + player_list[0].duration + ']')
+            await message.channel.send(url)
 
 
 
@@ -270,6 +282,27 @@ def duration_parsing(input):
 
 glasses = "I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?"
 
+
+def parse_playlist(url, max_size):
+    url_list = []
+    query = parse_qs(urlparse(url).query, keep_blank_values=True)
+    playlist_id = query["list"][0]
+    youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = "AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs")
+    request = youtube.playlistItems().list(part = "snippet",playlistId = playlist_id,maxResults = 50)
+    response = request.execute()
+    playlist_items = []
+    while request is not None:
+        response = request.execute()
+        playlist_items += response["items"]
+        request = youtube.playlistItems().list_next(request, response)
+        for t in playlist_items:
+            link = f'https://www.youtube.com/watch?v={t["snippet"]["resourceId"]["videoId"]}'
+            print(link)
+            if link not in url_list:
+                if len(url_list)>max_size:
+                    break
+                url_list.append(link)
+    return url_list
 
 client.loop.create_task(yt_player())
 client.run(TOKEN)
