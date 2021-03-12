@@ -5,3 +5,4 @@ async-timeout==3.0.1
 python-dotenv==0.15.0
 youtube_dl==2021.3.3
 google-api-python-client==2.0.2
+idna==2.10
