@@ -131,9 +131,9 @@ async def on_message(message):
         if '?list=' in input:
             url = input
         elif 'www.youtube.com' in url:
-            url = url
+            url = input
         else:
-            url = search_parsing(message.content[7:])
+            url = search_parsing(input)
         print(url)
         if '?list=' in url:
             for link in parse_playlist(url,20):
