@@ -132,22 +132,16 @@ async def on_message(message):
         else:
             url = search_parsing(message.content[7:])
         print(url)
-        try:
-            voice_channel = message.author.voice.channel
-            await voice_channel.connect()
-        except:
-            pass
         if 'list' in url:
-            songs_to_add.extend(parse_playlist(url,20))
-            for link in songs_to_add:
-                player = await YTDLSource.from_url(link, loop=client.loop)
-                total_duration += int(player.seconds)
-                player_list.append(player)
+            for link in parse_playlist(url,20):
+                video = ytvideo(link)
+                total_duration += video.seconds
+                songs_to_add.append(video)
         else:
-            songs_to_add.append(url)
-            player = await YTDLSource.from_url(url, loop=client.loop)
-            total_duration += int(player.seconds)
-            player_list.append(player)
+            await message.channel.send("Song found: " + url)
+            video = ytvideo(url)
+            total_duration += video.seconds
+            songs_to_add.append(video)
         if total_duration > 600:
             reply = await message.reply('Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']')
             await reply.add_reaction('👍')
@@ -159,14 +153,24 @@ async def on_message(message):
             except asyncio.TimeoutError:
                 await message.channel.send('Song not added peko!')
                 return
-        for item in player_list:
+        for item in songs_to_add:
             await yt_list.put(item)
             playlist.append(item.title)
-        if player_list.count == 1:
-            await message.channel.send(f'Song added to list peko~!:\n' + player_list[0].title + ' [Duration: ' + player_list[0].duration + ']')
-            await message.channel.send(url)
+        if len(songs_to_add) == 1:
+            await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
+        try:
+            voice_channel = message.author.voice.channel
+            await voice_channel.connect()
+        except:
+            pass
 
-
+    if message.content[0:6] == '!pekoc':
+        for x in client.voice_clients:
+                x.stop()
+        while playlist:
+            await yt_list.get()
+            playlist.pop(0)
+        await message.channel.send('Playlist cleared!')
 
     if message.content[0:6] == '!pekoq':
         videos = '\n'.join(video for video in playlist)
@@ -186,7 +190,8 @@ async def on_message(message):
 async def yt_player():
     while True:
         voice_channel = None
-        current_track = await yt_list.get()
+        video = await yt_list.get()
+        current_track = await YTDLSource.from_url(video.url, loop=client.loop)
         for vc in client.voice_clients:
             voice_channel = vc
         while voice_channel.is_playing():
@@ -205,9 +210,6 @@ async def yt_stopper():
             await client.voice_clients[0].disconnect()
 yt_stopper.start()
 
-
-
-
 """ pekofy splitter """
 def pekofy(input):
     output = input
@@ -221,10 +223,6 @@ def pekofy(input):
     else:
         output += " peko."
     return output
-
-
-
-
 
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -303,6 +301,54 @@ def parse_playlist(url, max_size):
                     break
                 url_list.append(link)
     return url_list
+class ytvideo:
+    def __init__(self,url):
+        self.url = url
+        self.data = getdata(url)
+        self.duration = self.data['contentDetails']['duration']
+        self.title = self.data['snippet']['title']
+        self.seconds = ytDurationToSeconds(self.duration)
+
+def getdata(url):
+    video_id = url.replace('https://www.youtube.com/watch?v=','')
+    api_key="AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs"
+    searchUrl="https://www.googleapis.com/youtube/v3/videos?id="+video_id+"&key="+api_key+"&part=contentDetails&part=snippet"
+    response = urllib.request.urlopen(searchUrl).read()
+    data = json.loads(response)
+    all_data=data['items'][0]
+    return all_data
+
+def ytDurationToSeconds(duration): #eg P1W2DT6H21M32S
+    week = 0
+    day  = 0
+    hour = 0
+    min  = 0
+    sec  = 0
+    duration = duration.lower()
+    value = ''
+    for c in duration:
+        if c.isdigit():
+            value += c
+            continue
+        elif c == 'p':
+            pass
+        elif c == 't':
+            pass
+        elif c == 'w':
+            week = int(value) * 604800
+        elif c == 'd':
+            day = int(value)  * 86400
+        elif c == 'h':
+            hour = int(value) * 3600
+        elif c == 'm':
+            min = int(value)  * 60
+        elif c == 's':
+            sec = int(value)
+
+        value = ''
+    return week + day + hour + min + sec
+
+
 
 client.loop.create_task(yt_player())
 client.run(TOKEN)
