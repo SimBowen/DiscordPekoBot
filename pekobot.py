@@ -128,12 +128,14 @@ async def on_message(message):
         total_duration = 0
         songs_to_add = []
         player_list = []
-        if 'list' in input:
+        if '?list=' in input:
             url = input
+        elif 'www.youtube.com' in url:
+            url = url
         else:
             url = search_parsing(message.content[7:])
         print(url)
-        if 'list' in url:
+        if '?list=' in url:
             for link in parse_playlist(url,20):
                 video = ytvideo(link)
                 total_duration += video.seconds
