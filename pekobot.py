@@ -156,16 +156,16 @@ async def on_message(message):
             except asyncio.TimeoutError:
                 await message.channel.send('Song not added peko!')
                 return
-        for item in songs_to_add:
-            await yt_list.put(item)
-            playlist.append(item.title)
-        if len(songs_to_add) == 1:
-            await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
         try:
             voice_channel = message.author.voice.channel
             await voice_channel.connect()
         except:
             pass
+        for item in songs_to_add:
+            await yt_list.put(item)
+            playlist.append(item.title)
+        if len(songs_to_add) == 1:
+            await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
 
     if message.content[0:6] == '!pekoc':
         for x in client.voice_clients:
