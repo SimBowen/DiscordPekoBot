@@ -19,6 +19,7 @@ import re
 import datetime
 from urllib.parse import parse_qs, urlparse
 import googleapiclient.discovery
+import json
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
