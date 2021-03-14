@@ -122,7 +122,7 @@ async def on_message(message):
         print(pekofy(messages[1].content))
         await message.channel.send(pekofy(messages[1].content))
 
-    if message.content[0:6] == '!pekop':
+    if message.content[0:6] == '!play':
         url = ''
         input = message.content[7:]
         total_duration = 0
@@ -167,19 +167,19 @@ async def on_message(message):
         if len(songs_to_add) == 1:
             await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
 
-    if message.content[0:6] == '!pekoc':
-        for x in client.voice_clients:
-                x.stop()
+    if message.content[0:6] == '!clear':
         while playlist:
             await yt_list.get()
             playlist.pop(0)
+        for x in client.voice_clients:
+                x.stop()
         await message.channel.send('Playlist cleared!')
 
-    if message.content[0:6] == '!pekoq':
+    if message.content[0:6] == '!queue':
         videos = '\n'.join(video for video in playlist)
         await message.channel.send(f'Playlist peko~!:\n{videos}')
 
-    if message.content[0:6] == '!pekos':
+    if message.content[0:6] == '!skip':
         for x in client.voice_clients:
                 return x.stop()
 
