@@ -119,7 +119,11 @@ async def on_message(message):
         print(pekofy(messages[1].content))
         await message.channel.send(pekofy(messages[1].content))
 
+<<<<<<< HEAD
     if message.content[0:5] == '!play':
+=======
+    if message.content[0:6] == '!pekop':
+>>>>>>> parent of f06936a (changed skip command execution order)
         url = ''
         input = message.content[6:]
         total_duration = 0
@@ -164,19 +168,23 @@ async def on_message(message):
         if len(songs_to_add) == 1:
             await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
 
-    if message.content[0:6] == '!clear':
+    if message.content[0:6] == '!pekoc':
+        for x in client.voice_clients:
+                x.stop()
         while playlist:
             await yt_list.get()
             playlist.pop(0)
-        for x in client.voice_clients:
-                x.stop()
         await message.channel.send('Playlist cleared!')
 
-    if message.content[0:6] == '!queue':
+    if message.content[0:6] == '!pekoq':
         videos = '\n'.join(video for video in playlist)
         await message.channel.send(f'Playlist peko~!:\n{videos}')
 
+<<<<<<< HEAD
     if message.content[0:5] == '!skip':
+=======
+    if message.content[0:6] == '!pekos':
+>>>>>>> parent of f06936a (changed skip command execution order)
         for x in client.voice_clients:
                 return x.stop()
 
