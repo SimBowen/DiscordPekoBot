@@ -119,11 +119,7 @@ async def on_message(message):
         print(pekofy(messages[1].content))
         await message.channel.send(pekofy(messages[1].content))
 
-<<<<<<< HEAD
     if message.content[0:5] == '!play':
-=======
-    if message.content[0:6] == '!pekop':
->>>>>>> parent of f06936a (changed skip command execution order)
         url = ''
         input = message.content[6:]
         total_duration = 0
@@ -180,11 +176,7 @@ async def on_message(message):
         videos = '\n'.join(video for video in playlist)
         await message.channel.send(f'Playlist peko~!:\n{videos}')
 
-<<<<<<< HEAD
     if message.content[0:5] == '!skip':
-=======
-    if message.content[0:6] == '!pekos':
->>>>>>> parent of f06936a (changed skip command execution order)
         for x in client.voice_clients:
                 return x.stop()
 
