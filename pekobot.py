@@ -51,9 +51,12 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if 'haha' in message.content.lower():
+        """ response = "AH↗️HA↘️HA↗️HA↘️HA↗️HA↘️HA↗️HA↘️" """
         emoji = ['↗️','↘️','↙️', '↖️']
         for emote in emoji:
             await message.add_reaction(emote)
+        """ await message.channel.send(response) """
+        """ Gets author's vc if they are in one  """
         try:
             voice_channel = message.author.voice.channel
         except AttributeError:
@@ -121,7 +124,7 @@ async def on_message(message):
 
     if message.content[0:5] == '!play':
         url = ''
-        input = message.content[6:]
+        input = message.content[7:]
         total_duration = 0
         songs_to_add = []
         player_list = []
@@ -164,15 +167,15 @@ async def on_message(message):
         if len(songs_to_add) == 1:
             await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
 
-    if message.content[0:6] == '!pekoc':
-        for x in client.voice_clients:
-                x.stop()
+    if message.content[0:6] == '!clear':
         while playlist:
             await yt_list.get()
             playlist.pop(0)
+        for x in client.voice_clients:
+                x.stop()
         await message.channel.send('Playlist cleared!')
 
-    if message.content[0:6] == '!pekoq':
+    if message.content[0:6] == '!queue':
         videos = '\n'.join(video for video in playlist)
         await message.channel.send(f'Playlist peko~!:\n{videos}')
 
@@ -184,14 +187,14 @@ async def on_message(message):
         reply = await message.reply(glasses)
 
 
-
+""" fixed """
 
 
 async def yt_player():
     while True:
         voice_channel = None
         video = await yt_list.get()
-        current_track = video.getPlayer()
+        current_track = await YTDLSource.from_url(video.url, loop=client.loop)
         for vc in client.voice_clients:
             voice_channel = vc
         while voice_channel.is_playing():
@@ -301,96 +304,13 @@ def parse_playlist(url, max_size):
                     break
                 url_list.append(link)
     return url_list
-
-class ytplaylist:
-    def __init__(self,url):
-        self.url = url
-        self.duration = 0
-        self.videoList = self.parse_playlist(url,50)
-        self.ytvideolist = self.ytvideoList(self.videoList)
-
-
-    @classmethod
-    def parse_playlist(url, max_size):
-        url_list = []
-        query = parse_qs(urlparse(url).query, keep_blank_values=True)
-        playlist_id = query["list"][0]
-        youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = "AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs")
-        request = youtube.playlistItems().list(part = "snippet",playlistId = playlist_id,maxResults = max_size)
-        response = request.execute()
-        playlist_items = []
-        while request is not None:
-            response = request.execute()
-            playlist_items += response["items"]
-            request = youtube.playlistItems().list_next(request, response)
-            for t in playlist_items:
-                link = f'https://www.youtube.com/watch?v={t["snippet"]["resourceId"]["videoId"]}'
-                print(link)
-                if link not in url_list:
-                    url_list.append(link)
-        return url_list
-
-    @classmethod
-    def ytvideoList(self,input):
-        output = []
-        for link in input:
-                video = ytvideo(link)
-                output.append(video)
-                self.duration += video.seconds
-        return output
-
 class ytvideo:
     def __init__(self,url):
         self.url = url
-        self.data = self.getdata()
+        self.data = getdata(url)
         self.duration = self.data['contentDetails']['duration']
         self.title = self.data['snippet']['title']
-        self.seconds = self.ytDurationToSeconds()
-    @classmethod
-    async def getPlayer(self):
-        return await YTDLSource.from_url(self.url, loop=client.loop)
-
-    @classmethod
-    def getdata(self):
-        video_id = self.url.replace('https://www.youtube.com/watch?v=','')
-        api_key="AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs"
-        searchUrl="https://www.googleapis.com/youtube/v3/videos?id="+video_id+"&key="+api_key+"&part=contentDetails&part=snippet"
-        response = urllib.request.urlopen(searchUrl).read()
-        data = json.loads(response)
-        all_data=data['items'][0]
-        return all_data
-    
-    @classmethod
-    def ytDurationToSeconds(self):
-        week = 0
-        day  = 0
-        hour = 0
-        min  = 0
-        sec  = 0
-        duration = self.duration.lower()
-        value = ''
-        for c in duration:
-            if c.isdigit():
-                value += c
-                continue
-            elif c == 'p':
-                pass
-            elif c == 't':
-                pass
-            elif c == 'w':
-                week = int(value) * 604800
-            elif c == 'd':
-                day = int(value)  * 86400
-            elif c == 'h':
-                hour = int(value) * 3600
-            elif c == 'm':
-                min = int(value)  * 60
-            elif c == 's':
-                sec = int(value)
-
-            value = ''
-        return week + day + hour + min + sec
-
+        self.seconds = ytDurationToSeconds(self.duration)
 
 def getdata(url):
     video_id = url.replace('https://www.youtube.com/watch?v=','')
