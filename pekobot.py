@@ -130,7 +130,7 @@ async def on_message(message):
         player_list = []
         if '?list=' in input:
             url = input
-        elif 'www.youtube.com' in url:
+        elif 'www.youtube.com' in input:
             url = input
         else:
             url = search_parsing(input)
