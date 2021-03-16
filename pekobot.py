@@ -124,7 +124,7 @@ async def on_message(message):
 
     if message.content[0:5] == '!play':
         url = ''
-        input = message.content[7:]
+        input = message.content[6:]
         total_duration = 0
         songs_to_add = []
         player_list = []
