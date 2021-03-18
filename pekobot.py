@@ -145,8 +145,9 @@ async def on_message(message):
             video = ytvideo(url)
             total_duration += video.seconds
             songs_to_add.append(video)
+        print(total_duration)
         if total_duration > 600:
-            reply = await message.reply('```Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']```')
+            reply = await message.reply('Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']')
             await reply.add_reaction('👍')
             await reply.add_reaction('👎')
             def check(reaction, user):
@@ -155,12 +156,13 @@ async def on_message(message):
                 reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
             except asyncio.TimeoutError:
                 await message.channel.send('```Song not added peko!```')
-                return
+                return 
         try:
             voice_channel = message.author.voice.channel
             await voice_channel.connect()
         except:
             pass
+        await message.delete()
         for item in songs_to_add:
             await yt_list.put(item)
             playlist.append(item.title)
@@ -168,9 +170,10 @@ async def on_message(message):
             await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']```')
 
     if message.content[0:6] == '!clear':
-        while playlist:
-            await yt_list.get()
+        while len(playlist) > 1:
             playlist.pop(0)
+            await yt_list.get()
+        playlist.pop(0)
         for x in client.voice_clients:
                 x.stop()
         await message.channel.send('```Playlist cleared!```')
@@ -202,7 +205,11 @@ async def yt_player():
         voice_channel.play(current_track)
         while voice_channel.is_playing():
             await sleep(1)
-        playlist.pop(0)
+        try:
+            playlist.pop(0)
+        except:
+            pass
+
 
 @loop(seconds=60)
 async def yt_stopper():
@@ -281,6 +288,20 @@ def ytSearch(input):
     id = response["items"][0]["id"]["videoId"]
     url = f"https://www.youtube.com/watch?v={id}"
     return url
+
+def ytSearch(input, entries):
+    youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = "AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs")
+    request = youtube.search().list(
+        part="snippet",
+        maxResults=5,
+        q=input
+    )
+    response = request.execute()
+    response = response["items"]
+    search_list = []
+    for i in range(5):
+        search_list.append(response[i])
+    return search_list
 
 
 
