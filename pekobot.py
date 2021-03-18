@@ -127,13 +127,13 @@ async def on_message(message):
         input = message.content[6:]
         total_duration = 0
         songs_to_add = []
-        player_list = []
+        print(input)
         if '?list=' in input:
             url = input
         elif 'www.youtube.com' in input:
             url = input
         else:
-            url = search_parsing(input)
+            url = ytSearch(input)
         print(url)
         if '?list=' in url:
             for link in parse_playlist(url,20):
@@ -141,12 +141,12 @@ async def on_message(message):
                 total_duration += video.seconds
                 songs_to_add.append(video)
         else:
-            await message.channel.send("Song found: " + url)
+            await message.channel.send(f"Song found: {url}")
             video = ytvideo(url)
             total_duration += video.seconds
             songs_to_add.append(video)
         if total_duration > 600:
-            reply = await message.reply('Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']')
+            reply = await message.reply('```Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']```')
             await reply.add_reaction('👍')
             await reply.add_reaction('👎')
             def check(reaction, user):
@@ -154,7 +154,7 @@ async def on_message(message):
             try:
                 reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
             except asyncio.TimeoutError:
-                await message.channel.send('Song not added peko!')
+                await message.channel.send('```Song not added peko!```')
                 return
         try:
             voice_channel = message.author.voice.channel
@@ -165,7 +165,7 @@ async def on_message(message):
             await yt_list.put(item)
             playlist.append(item.title)
         if len(songs_to_add) == 1:
-            await message.channel.send(f'Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']')
+            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']```')
 
     if message.content[0:6] == '!clear':
         while playlist:
@@ -173,11 +173,11 @@ async def on_message(message):
             playlist.pop(0)
         for x in client.voice_clients:
                 x.stop()
-        await message.channel.send('Playlist cleared!')
+        await message.channel.send('```Playlist cleared!```')
 
     if message.content[0:6] == '!queue':
         videos = '\n'.join(video for video in playlist)
-        await message.channel.send(f'Playlist peko~!:\n{videos}')
+        await message.channel.send(f'```Playlist peko~!:\n{videos}```')
 
     if message.content[0:5] == '!skip':
         for x in client.voice_clients:
@@ -270,11 +270,18 @@ class YTDLSource(discord.PCMVolumeTransformer):
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
-def search_parsing(input):
-    search_keyword=input.replace(" ", "+")
-    html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search_keyword)
-    video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-    return "https://www.youtube.com/watch?v=" + video_ids[0]
+def ytSearch(input):
+    youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = "AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs")
+    request = youtube.search().list(
+        part="snippet",
+        maxResults=5,
+        q=input
+    )
+    response = request.execute()
+    id = response["items"][0]["id"]["videoId"]
+    url = f"https://www.youtube.com/watch?v={id}"
+    return url
+
 
 
 def duration_parsing(input):
