@@ -289,7 +289,7 @@ def ytSearch(input):
     url = f"https://www.youtube.com/watch?v={id}"
     return url
 
-def ytSearch(input, entries):
+""" def ytSearch(input, entries):
     youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = "AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs")
     request = youtube.search().list(
         part="snippet",
@@ -302,7 +302,7 @@ def ytSearch(input, entries):
     for i in range(5):
         search_list.append(response[i])
     return search_list
-
+ """
 
 
 def duration_parsing(input):
