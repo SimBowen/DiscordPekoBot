@@ -167,7 +167,7 @@ async def on_message(message):
             await yt_list.put(item)
             playlist.append(item.title)
         if len(songs_to_add) == 1:
-            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']```')
+            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']' + '[Requested by: ' + message.author.name + ']```')
 
     if message.content[0:6] == '!clear':
         while len(playlist) > 1:
@@ -179,12 +179,23 @@ async def on_message(message):
         await message.channel.send('```Playlist cleared!```')
 
     if message.content[0:6] == '!queue':
-        videos = '\n'.join(video for video in playlist)
+        videos = ''
+        for i in range(len(playlist)):
+            videos += '\n' + str(i+1) + '. ' + playlist[i]
         await message.channel.send(f'```Playlist peko~!:\n{videos}```')
 
-    if message.content[0:5] == '!skip':
+    if message.content == '!skip':
         for x in client.voice_clients:
                 return x.stop()
+    elif message.content[0:5] == '!skip':
+        entry = int(message.content[6:]) - 1
+        playlist.pop(entry)
+        videos = ''
+        for i in range(len(playlist)):
+            videos += '\n' + str(i+1) + '. ' + playlist[i]
+        await message.channel.send(f'```Playlist peko~!:\n{videos}```')
+        
+
 
     if 'glasses' in message.content.lower():
         reply = await message.reply(glasses)
@@ -202,7 +213,12 @@ async def yt_player():
             voice_channel = vc
         while voice_channel.is_playing():
             await sleep(1)
-        voice_channel.play(current_track)
+        if(current_track.title == playlist[0]):
+            voice_channel.play(current_track)
+        else:
+            continue
+        """ if (current_track.title != playlist[0]):
+            voice_channel.stop() """
         while voice_channel.is_playing():
             await sleep(1)
         try:
@@ -301,8 +317,8 @@ def ytSearch(input):
     search_list = []
     for i in range(5):
         search_list.append(response[i])
-    return search_list
- """
+    return search_list """
+
 
 
 def duration_parsing(input):
