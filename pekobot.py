@@ -128,14 +128,14 @@ async def on_message(message):
         total_duration = 0
         songs_to_add = []
         print(input)
-        if '?list=' in input:
+        if '&list=' in input:
             url = input
         elif 'www.youtube.com' in input:
             url = input
         else:
             url = ytSearch(input)
         print(url)
-        if '?list=' in url:
+        if '&list=' in url or '?list=' in url:
             for link in parse_playlist(url,20):
                 video = ytvideo(link)
                 total_duration += video.seconds
@@ -181,18 +181,28 @@ async def on_message(message):
     if message.content[0:6] == '!queue':
         videos = ''
         for i in range(len(playlist)):
-            videos += '\n' + str(i+1) + '. ' + playlist[i]
-        await message.channel.send(f'```Playlist peko~!:\n{videos}```')
+            if i == 0:
+                videos += '\nCurrent Song:\n' + playlist[i]
+                videos += '\n\nPlaylist:'
+            else:
+                videos += '\n' + str(i) + '. ' + playlist[i]
+        if len(playlist) == 0:
+            videos = 'Playlist empty!'
+        await message.channel.send(f'```{videos}```')
 
     if message.content == '!skip':
         for x in client.voice_clients:
                 return x.stop()
     elif message.content[0:5] == '!skip':
-        entry = int(message.content[6:]) - 1
+        entry = int(message.content[6:])
         playlist.pop(entry)
         videos = ''
         for i in range(len(playlist)):
-            videos += '\n' + str(i+1) + '. ' + playlist[i]
+            if i == 0:
+                videos += '\nCurrent Song:\n' + playlist[i]
+                videos += '\n\nPlaylist:'
+            else:
+                videos += '\n' + str(i) + '. ' + playlist[i]
         await message.channel.send(f'```Playlist peko~!:\n{videos}```')
         
 
@@ -215,6 +225,8 @@ async def yt_player():
             await sleep(1)
         if(current_track.title == playlist[0]):
             voice_channel.play(current_track)
+            c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio')
+            await c_channel.send("Now playing: " + video.title)
         else:
             continue
         """ if (current_track.title != playlist[0]):
