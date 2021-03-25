@@ -226,7 +226,7 @@ async def yt_player():
         if(current_track.title == playlist[0]):
             voice_channel.play(current_track)
             c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio')
-            await c_channel.send("Now playing: " + video.title)
+            await c_channel.send(f"```Now playing: {video.title}```")
         else:
             continue
         """ if (current_track.title != playlist[0]):
