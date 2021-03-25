@@ -239,7 +239,7 @@ async def yt_player():
             pass
 
 
-@loop(seconds=60)
+@loop(seconds=154)
 async def yt_stopper():
     if client.voice_clients:
         if client.voice_clients[0].is_playing():
