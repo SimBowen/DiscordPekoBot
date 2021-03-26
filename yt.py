@@ -133,7 +133,7 @@ class ytvideo:
         video_id = url.replace('https://www.youtube.com/watch?v=','')
         request = youtube.videos().list(part="snippet,contentDetails",id=video_id)
         response = request.execute()
-        all_data=response['items'][0]
+        all_data=response['items']
         return all_data
 
     classmethod
