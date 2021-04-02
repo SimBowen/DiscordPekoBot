@@ -133,6 +133,9 @@ async def on_message(message):
 
     if 'dragon' in message.content.lower(): #Glasses.
         reply = await message.reply("Dragon deez nuts on your face peko~!")
+        emoji = ['↗️','↘️','↙️', '↖️']
+        for emote in emoji:
+            await reply.add_reaction(emote)
 
 
 
