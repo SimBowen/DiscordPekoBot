@@ -131,6 +131,9 @@ async def on_message(message):
     if 'glasses' in message.content.lower(): #Glasses.
         reply = await message.reply(glasses)
 
+    if 'dragon' in message.content.lower(): #Glasses.
+        reply = await message.reply("Dragon deez nuts on your face peko~!")
+
 
 
 async def print_playlist(list, channel): #builds playlist string
