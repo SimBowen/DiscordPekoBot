@@ -1,7 +1,6 @@
 # bot.py
 
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
-
 import asyncio
 import os
 import discord
@@ -50,6 +49,7 @@ async def on_message(message):
         for emote in emoji:
             await message.add_reaction(emote)
         n = random.randint(1,10)
+        """takes a random mp3 file"""
         file = "haha" + n + ".mp3"
         await play_mp3(file,message) #awaits the invocation of play_mp3 method
     if 'horny' in message.content.lower():
