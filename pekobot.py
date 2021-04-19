@@ -14,6 +14,7 @@ from urllib.parse import parse_qs, urlparse
 from yt import ytvideo
 from yt import ytplaylist
 from yt import YTDLSource
+import random
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -48,15 +49,20 @@ async def on_message(message):
         emoji = ['↗️','↘️','↙️', '↖️'] #holds the reaction emojis
         for emote in emoji:
             await message.add_reaction(emote)
-        haha = ['haha1.mp3', 'haha2.mp3', 'haha3.mp3', 'haha4.mp3', 'haha5.mp3', 'haha6.mp3', 'haha7.mp3'] #holds the names of the mp3 files
-        file = random.choice(haha) #randomy selects an mp3 file
+        n = random.randint(1,10)
+        file = "haha" + n + ".mp3"
         await play_mp3(file,message) #awaits the invocation of play_mp3 method
-            
     if 'horny' in message.content.lower():
         await play_mp3("horny.mp3", message) #awaits the invocation of play_mp3 method
 
     if 'ehe' in message.content.lower():
         await play_mp3("ehe.mp3", message) #awaits the invocation of play_mp3 method
+
+    if 'pekora' in message.content.lower():
+        await play_mp3("pekora.mp3", message)
+
+    if 'friend' in message.content.lower():
+        play_mp3("friend.mp3", message)
 
     if 'yep' in message.content.lower():
         id = 792035440428974111 #set emoji id
@@ -131,11 +137,13 @@ async def on_message(message):
     if 'glasses' in message.content.lower(): #Glasses.
         reply = await message.reply(glasses)
 
-    if 'dragon' in message.content.lower(): #Glasses.
-        reply = await message.reply("Dragon deez nuts on your face peko~!")
-        emoji = ['↗️','↘️','↙️', '↖️']
-        for emote in emoji:
-            await reply.add_reaction(emote)
+    if 'dragon' in message.content.lower():
+
+        if message.author != client.user:
+            reply = await message.reply("Dragon deez nuts on your face peko~!")
+            emoji = ['↗️','↘️','↙️', '↖️']
+            for emote in emoji:
+                await reply.add_reaction(emote)
 
 
 
