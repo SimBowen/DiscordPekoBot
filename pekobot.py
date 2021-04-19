@@ -50,7 +50,7 @@ async def on_message(message):
             await message.add_reaction(emote)
         n = random.randint(1,10)
         """takes a random mp3 file"""
-        file = "haha" + n + ".mp3"
+        file = "haha" + str(n) + ".mp3"
         await play_mp3(file,message) #awaits the invocation of play_mp3 method
     if 'horny' in message.content.lower():
         await play_mp3("horny.mp3", message) #awaits the invocation of play_mp3 method
