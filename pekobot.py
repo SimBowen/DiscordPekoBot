@@ -62,7 +62,7 @@ async def on_message(message):
         await play_mp3("pekora.mp3", message)
 
     if 'friend' in message.content.lower():
-        play_mp3("friend.mp3", message)
+        await play_mp3("friend.mp3", message)
 
     if 'yep' in message.content.lower():
         id = 792035440428974111 #set emoji id
