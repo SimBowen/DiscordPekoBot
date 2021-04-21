@@ -25,7 +25,8 @@ def parse_URI(url):
     URIs = []
     if 'playlist' in url:
         id = url[0:url.index("?")].replace("open.spotify.com/playlist/","").replace("https://","")
-        ids = getTrackIDs('Novalty', id)
+        """ Maximum number of tracks """
+        ids = getTrackIDs('Novalty', id, 15)
         URIs.extend(ids)
     else:
         id = url[0:url.index("?")].replace("open.spotify.com/track/","").replace("https://","")
@@ -33,10 +34,9 @@ def parse_URI(url):
     return URIs
     
 """ Get the list of track URIs from playlist id """
-def getTrackIDs(user, playlist_id):
+def getTrackIDs(user, playlist_id, max_songs):
     ids = []
     playlist = sp.user_playlist(user, playlist_id)
-    max_songs = 15
     counter = 0
     for item in playlist['tracks']['items']:
         track = item['track']
