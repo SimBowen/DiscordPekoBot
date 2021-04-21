@@ -3,12 +3,14 @@ import discord
 import youtube_dl
 from urllib.parse import parse_qs, urlparse
 import googleapiclient.discovery
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 
 
-
-
-youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = "AIzaSyDZOcdGIepf75qkTS0stb6f_-5XsUB5INs")
+APIkey = os.getenv('YT_API')
+youtube = googleapiclient.discovery.build("youtube", "v3", developerKey = APIkey)
 
 
 
