@@ -8,7 +8,7 @@ load_dotenv()
 S_ID = os.getenv('CLIENT_ID')
 S_SECRET = os.getenv('CLIENT_SECRET')
 
-""" Loading spotiy API """
+""" Loading spotipy API """
 client_credentials_manager = SpotifyClientCredentials(client_id=S_ID, client_secret=S_SECRET)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
