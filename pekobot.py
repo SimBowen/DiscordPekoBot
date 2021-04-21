@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, urlparse
 from yt import ytvideo
 from yt import ytplaylist
 from yt import YTDLSource
+from spotify import spotify_parsing
 import random
 load_dotenv()
 
@@ -79,7 +80,13 @@ async def on_message(message):
         total_duration = 0
         songs_to_add = []
         print(input)
-        if '&list=' in input or '?list=' in input: #checks if input is a playlist
+        if 'spotify' in input:
+            song_list = spotify_parsing(input)
+            for item in song_list:
+                video = ytvideo(item)
+                total_duration += video.seconds
+                songs_to_add.append(video)
+        elif '&list=' in input or '?list=' in input: #checks if input is a playlist
             videolist = ytplaylist(input) #creates ytplaylist object from input url
             songs_to_add.extend(videolist.ytvideolist) #appends the list of ytvideo objects in videolist ot songs_to_add
             total_duration += videolist.seconds
