@@ -161,7 +161,7 @@ async def on_message(message):
         embed.add_field(name="Status", value="Valid")
         embed.set_footer(text="This message will time out 3 minutes after the notices has been sent!")
         alert = await message.channel.send(embed=embed)
-        message.delete()
+        await message.delete()
         await alert.add_reaction('👍')
         embedupdate=discord.Embed(title="Old Raid", url="", description="This is an old raid alert.", color=0xFF5733)
         embedupdate.set_author(name=by.name, url="", icon_url=by.avatar_url)
