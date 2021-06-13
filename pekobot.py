@@ -159,7 +159,7 @@ async def on_message(message):
         embed.add_field(name="Level", value=level, inline=True)
         embed.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
         embed.add_field(name="Status", value="Valid")
-        embed.set_footer(text="This message will time out 3 minutes after the notices has been sent!")
+        embed.set_footer(text="This message will time out 3 minutes after the time it was sent!")
         alert = await message.channel.send(embed=embed)
         await message.delete()
         await alert.add_reaction('👍')
