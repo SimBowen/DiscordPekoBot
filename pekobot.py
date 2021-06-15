@@ -17,6 +17,8 @@ from spotify import spotify_parsing
 import random
 import pytz
 from datetime import datetime
+from CS import chara_search
+from CS import chara_formatting
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -179,7 +181,16 @@ async def on_message(message):
         except asyncio.TimeoutError:
             embedupdate.set_footer(text="3 minutes has elapsed. Raid boss may have been killed!")
             await alert.edit(embed = embedupdate)
-            return 
+            return
+
+    if "!cs" in message.content.lower():
+        search = message.content[4:]
+        try:
+            character = chara_search(search)
+            embed = chara_formatting(character)
+            await message.channel.send(embed=embed)
+        except:
+            await message.channel.send("Invalid search!")
         
 
 
