@@ -37,7 +37,10 @@ def parsing(unit, data):
     character['overall'] = data[10]
     character['set'] = data[12]
     character['skill'] = data[13]
-    character['notes'] = data[16]
+    try:
+        character['notes'] = data[16]
+    except:
+        character['notes'] = ''
 
     return character
 
