@@ -18,7 +18,6 @@ def chara_search(name):
             if (mylist[i].lower().count(name.lower())>0):
                 values_list = type.row_values(i + 1)
                 characters.append(parsing(type.title, values_list))
-                print(characters)
     return characters
 
 
