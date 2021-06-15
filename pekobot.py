@@ -186,9 +186,10 @@ async def on_message(message):
     if "!cs" in message.content.lower():
         search = message.content[4:]
         try:
-            character = chara_search(search)
-            embed = chara_formatting(character)
-            await message.channel.send(embed=embed)
+            characters = chara_search(search)
+            for character in characters:
+                embed = chara_formatting(character)
+                await message.channel.send(embed=embed)
         except:
             await message.channel.send("Invalid search!")
         

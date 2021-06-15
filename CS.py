@@ -1,4 +1,5 @@
 import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import discord
 
 gc = gspread.service_account(filename='creds.json')
@@ -8,18 +9,18 @@ classes = ["Defender", "Striker", "Ranger", "Sniper", "Support", "Siege"]
 
 def chara_search(name):
     data = []
-    character = {"name":name}
+    characters = []
     for type in classes:
         temp = gsheet.worksheet(type)
         data.append(temp)
     for type in data:
         mylist = type.col_values(2)
-        try:
-            index = mylist.index(name)
-            values_list = type.row_values(index + 1)
-            return parsing(type.title, values_list)
-        except:
-            pass
+        for i in range(len(mylist)):
+            if (mylist[i].lower().count(name.lower())>0):
+                values_list = type.row_values(i + 1)
+                characters.append(parsing(type.title, values_list))
+                print(characters)
+    return characters
 
 
 def parsing(unit, data):
@@ -55,6 +56,7 @@ def chara_formatting(data):
     embed.add_field(name="Ranked PVP", value=data['rpvp'], inline=True)
     embed.add_field(name="Strategy PVP", value=data['spvp'], inline=True)
     embed.add_field(name="Raid", value=data['raid'], inline=True)
+    
 
     embed.add_field(name="Gear Recc.", value=data['set'], inline=True)
     embed.add_field(name="Skills", value=data['skill'], inline=True)
