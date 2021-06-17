@@ -4,7 +4,7 @@ import discord
 gc = gspread.service_account(filename='creds.json')
 gsheet = gc.open_by_key("1eN8YLqAvzYTHP3V9yv1BYV0kMKJa-FdhW-_qaj2QDJA")
 
-classes = ["Defender", "Striker", "Ranger", "Sniper", "Support", "Siege"]
+classes = ["Defender", "Striker", "Ranger", "Sniper", "Support", "Siege", "Tower"]
 
 def chara_search(name):
     data = []
