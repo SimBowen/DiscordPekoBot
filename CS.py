@@ -32,13 +32,16 @@ def parsing(unit, data):
     character['atktype'] = data[5]
     character['pve'] = data[6]
     character['raid'] = data[7]
-    character['rpvp'] = data[8]
-    character['spvp'] = data[9]
-    character['overall'] = data[10]
-    character['set'] = data[12]
-    character['skill'] = data[13]
+    character['gcoop'] = data[8]
+    character['shall'] = data[9]
+    character['cbattle'] = data[10]
+    character['rpvp'] = data[11]
+    character['spvp'] = data[12]
+    character['overall'] = data[13]
+    character['set'] = data[15]
+    character['skill'] = data[16]
     try:
-        character['notes'] = data[16]
+        character['notes'] = data[19]
     except:
         character['notes'] = ''
 
@@ -53,12 +56,20 @@ def chara_formatting(data):
     embed.add_field(name="Attack Type", value=data['atktype'], inline=True)
     embed.add_field(name="Overall", value=data['overall'], inline=True)
 
-    embed.add_field(name="PVE", value=data['pve'], inline=True)
+    embed.add_field(name="Story", value=data['pve'], inline=True)
+    embed.add_field(name="Raid", value=data['raid'], inline=True)
+    embed.add_field(name="\u200B", value='\u200B', inline=True)
+
+    embed.add_field(name="Guild Co-op", value=data['gcoop'], inline=True)
+    embed.add_field(name="Shadow Hall", value=data['shall'], inline=True)
+    embed.add_field(name="Clash Battle", value=data['cbattle'], inline=True)
+    
+    
     embed.add_field(name="Ranked PVP", value=data['rpvp'], inline=True)
     embed.add_field(name="Strategy PVP", value=data['spvp'], inline=True)
-    embed.add_field(name="Raid", value=data['raid'], inline=True)
-    
+    embed.add_field(name="\u200B", value='\u200B', inline=True)
 
+    
     embed.add_field(name="Gear Recc.", value=data['set'], inline=True)
     embed.add_field(name="Skills", value=data['skill'], inline=True)
 
