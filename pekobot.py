@@ -195,8 +195,9 @@ async def on_message(message):
         
 
 
-    if 'glasses' in message.content.lower(): #Glasses.
-        reply = await message.reply(glasses)
+    if 'glasses' in message.content.lower() : #Glasses.
+        if message.author != client.user:
+            reply = await message.reply(glasses)
 
     if 'dragon' in message.content.lower():
 
