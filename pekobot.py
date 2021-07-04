@@ -75,9 +75,9 @@ async def on_message(message):
         await message.add_reaction(emoji)
 
     if message.content == '!peko':
-        c_channel = discord.utils.get(message.guild.text_channels, name='novalty') #Set specific text channel ot monitor for messages
+        c_channel = discord.utils.get(message.guild.text_channels, name='general') #Set specific text channel ot monitor for messages
         messages = await c_channel.history(limit=2).flatten() #Grab the 2nd last message in channel
-        await message.channel.send(pekofy(messages[1].content)) #invokes pekofy and sends
+        await message.channel.send(pekoclass.pekofy(messages[1].content)) #invokes pekofy and sends
 
     if message.content[0:5] == '!play':
         input = message.content[6:]
@@ -192,8 +192,6 @@ async def on_message(message):
         for character in characters:
             embed = chara_formatting(character)
             await message.channel.send(embed=embed)
-        
-
 
     if 'glasses' in message.content.lower() : #Glasses.
         if message.author != client.user:
@@ -252,18 +250,19 @@ async def yt_stopper():
 yt_stopper.start()
 
 """ pekofy splitter """
-def pekofy(input): #Peko.
-    output = input
-    delimiters = ['.',',','!','?']
-    res = any(ele in delimiters for ele in input)
-    if res:
-        output = output.replace("."," peko.")
-        output = output.replace(","," peko,")
-        output = output.replace("!"," peko!")
-        output = output.replace("?"," peko?")
-    else:
-        output += " peko."
-    return output
+class pekoclass:
+    def pekofy(input): #Peko.
+        output = input
+        delimiters = ['.',',','!','?']
+        res = any(ele in delimiters for ele in input)
+        if res:
+            output = output.replace("."," peko.")
+            output = output.replace(","," peko,")
+            output = output.replace("!"," peko!")
+            output = output.replace("?"," peko?")
+        else:
+            output += " peko."
+        return output
 
 
 
