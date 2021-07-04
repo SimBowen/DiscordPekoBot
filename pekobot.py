@@ -54,6 +54,7 @@ async def on_ready():
 """ Triggers on message, checks if there were previous messages to parse."""
 @client.event
 async def on_message(message):
+    #Play laugh sounds
     if 'haha' in message.content.lower():
         emoji = ['↗️','↘️','↙️', '↖️'] #holds the reaction emojis
         for emote in emoji:
@@ -62,23 +63,30 @@ async def on_message(message):
         """takes a random mp3 file"""
         file = "haha" + str(n) + ".mp3"
         await play_mp3(file,message) #awaits the invocation of play_mp3 method
+
+    #Play marine horny sound
     if 'horny' in message.content.lower():
         await play_mp3("horny.mp3", message) #awaits the invocation of play_mp3 method
 
+    #Play paimon ehe sound
     if 'ehe' in message.content.lower():
         await play_mp3("ehe.mp3", message) #awaits the invocation of play_mp3 method
 
+    #Play pekora sounds
     if 'pekora' in message.content.lower():
         await play_mp3("pekora.mp3", message)
 
+    #Play Mori fuck your friends
     if 'friend' in message.content.lower():
         await play_mp3("friend.mp3", message)
 
+    #React with yepcock emoji
     if 'yep' in message.content.lower():
         id = 792035440428974111 #set emoji id
         emoji = client.get_emoji(id) #grab the emoji
         await message.add_reaction(emoji)
 
+    #Pekofy the message
     if message.content == '!peko':
         c_channel = discord.utils.get(message.guild.text_channels, name='novalty') #Set specific text channel ot monitor for messages
         messages = await c_channel.history(limit=2).flatten() #Grab the 2nd last message in channel
