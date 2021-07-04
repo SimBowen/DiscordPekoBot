@@ -59,26 +59,24 @@ async def on_message(message):
         await play_mp3(file,message) #awaits the invocation of play_mp3 method
     if 'horny' in message.content.lower():
         await play_mp3("horny.mp3", message) #awaits the invocation of play_mp3 method
-
     if 'ehe' in message.content.lower():
         await play_mp3("ehe.mp3", message) #awaits the invocation of play_mp3 method
-
     if 'pekora' in message.content.lower():
         await play_mp3("pekora.mp3", message)
-
     if 'friend' in message.content.lower():
         await play_mp3("friend.mp3", message)
-
     if 'yep' in message.content.lower():
         id = 792035440428974111 #set emoji id
         emoji = client.get_emoji(id) #grab the emoji
         await message.add_reaction(emoji)
 
+    #Peko
     if message.content == '!peko':
         c_channel = discord.utils.get(message.guild.text_channels, name='general') #Set specific text channel ot monitor for messages
         messages = await c_channel.history(limit=2).flatten() #Grab the 2nd last message in channel
         await message.channel.send(pekoclass.pekofy(messages[1].content)) #invokes pekofy and sends
 
+    #Music
     if message.content[0:5] == '!play':
         input = message.content[6:]
         total_duration = 0
@@ -142,7 +140,8 @@ async def on_message(message):
         entry = int(message.content[6:])
         playlist.pop(entry)
         await print_playlist(playlist, message.channel)
-    
+
+    #CounterSide
     if "!raid" in message.content.lower() and message.author != client.user:
         by = message.author
         input = message.content.lower()
@@ -182,7 +181,6 @@ async def on_message(message):
             embedupdate.set_footer(text="3 minutes has elapsed. Raid boss may have been killed!")
             await alert.edit(embed = embedupdate)
             return
-
     if "!cs" in message.content.lower():
         search = message.content[4:]
         characters = chara_search(search)
@@ -193,10 +191,12 @@ async def on_message(message):
             embed = chara_formatting(character)
             await message.channel.send(embed=embed)
 
+    #Glasses
     if 'glasses' in message.content.lower() : #Glasses.
         if message.author != client.user:
             reply = await message.reply(glasses)
 
+    #Dragon
     if 'dragon' in message.content.lower():
 
         if message.author != client.user:
