@@ -26,10 +26,15 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
 """ Intets are required for bot to see memebrs in the server as of latest discord.py """
+#Declarations
 intents = discord.Intents.default()
 intents.members = True
 client = discord.Client(intents=intents)
 
+#For Glasses
+glasses = "I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?"
+
+#For Music Bot
 yt_list = asyncio.Queue()
 playlist = []
 
@@ -77,7 +82,7 @@ async def on_message(message):
     if message.content == '!peko':
         c_channel = discord.utils.get(message.guild.text_channels, name='novalty') #Set specific text channel ot monitor for messages
         messages = await c_channel.history(limit=2).flatten() #Grab the 2nd last message in channel
-        await message.channel.send(pekofy(messages[1].content)) #invokes pekofy and sends
+        await message.channel.send(pekofy.pekofy(messages[1].content)) #invokes pekofy and sends
 
     if message.content[0:5] == '!play':
         input = message.content[6:]
@@ -133,7 +138,7 @@ async def on_message(message):
         await message.channel.send('```Playlist cleared!```')
 
     if message.content[0:6] == '!queue': #invokes print playlist method. Needs to be awaited as it prints a message
-        await print_playlist(playlist, message.channel)
+        await musicBot.print_playlist(playlist, message.channel)
 
     if message.content == '!skip': #stops the current song. playlist is handled by playback loop
         for x in client.voice_clients:
@@ -141,7 +146,7 @@ async def on_message(message):
     elif message.content[0:5] == '!skip': #uses lazy deletion in the regular list. actual skip is handled by the playback loop
         entry = int(message.content[6:])
         playlist.pop(entry)
-        await print_playlist(playlist, message.channel)
+        await musicBot.print_playlist(playlist, message.channel)
     
     if "!raid" in message.content.lower() and message.author != client.user:
         by = message.author
@@ -207,69 +212,68 @@ async def on_message(message):
                 await reply.add_reaction(emote)
 
 
+"""MusicBot Class: Play Music from youtube"""
+class musicBot:
+    async def print_playlist(list, channel): #builds playlist string
+        videos = ""
+        for i in range(len(list)):
+            if i == 0:
+                videos += '\nCurrent Song:\n' + playlist[i]
+                videos += '\n\nPlaylist:'
+            else:
+                videos += '\n' + str(i) + '. ' + playlist[i]
+        await channel.send(f'```{videos}```')
 
-async def print_playlist(list, channel): #builds playlist string
-    videos = ""
-    for i in range(len(list)):
-        if i == 0:
-            videos += '\nCurrent Song:\n' + playlist[i]
-            videos += '\n\nPlaylist:'
-        else:
-            videos += '\n' + str(i) + '. ' + playlist[i]
-    await channel.send(f'```{videos}```')
-
-async def yt_player(): #yt player loop/task
-    while True:
-        voice_channel = None
-        video = await yt_list.get() #pops the first ytvideo object from asyncio queue
-        current_track = await YTDLSource.from_url(video.url, loop=client.loop) #"player" is created using the method contained in YTDLSource. URL is extracted from ytvideo object
-        for vc in client.voice_clients: #Only works if bot is currently in voice channel. To be improved
-            voice_channel = vc
-        while voice_channel.is_playing():#Puts bot to sleep while track is playing. Stops bot from trying to play multiple songs at once due to loop
-            await sleep(1)
-        if(current_track.title == playlist[0]): #Lazy deletion is checked here. Checks if popped ytvideo name matches the first object in playlist. If so, play. 
-            voice_channel.play(current_track)
-            c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio') #retreives a specific text channel
-            await c_channel.send(f"```Now playing: {video.title}```")
-        else:
-            continue #do nothing and end the run of the loop if the first video is not the same as the popped queue item
-        while voice_channel.is_playing():
-            await sleep(1)
-        try:
-            playlist.pop(0)
-        except:
-            pass
-
-
-@loop(seconds=154) #Checks if anythin gis playing every few minutes. If nothing, disconnect bot.
-async def yt_stopper():
-    if client.voice_clients:
-        if client.voice_clients[0].is_playing():
+    async def yt_player(self): #yt player loop/task
+        while True:
+            voice_channel = None
+            video = await yt_list.get() #pops the first ytvideo object from asyncio queue
+            current_track = await YTDLSource.from_url(video.url, loop=client.loop) #"player" is created using the method contained in YTDLSource. URL is extracted from ytvideo object
+            for vc in client.voice_clients: #Only works if bot is currently in voice channel. To be improved
+                voice_channel = vc
+            while voice_channel.is_playing():#Puts bot to sleep while track is playing. Stops bot from trying to play multiple songs at once due to loop
+                await sleep(1)
+            if(current_track.title == playlist[0]): #Lazy deletion is checked here. Checks if popped ytvideo name matches the first object in playlist. If so, play.
+                voice_channel.play(current_track)
+                c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio') #retreives a specific text channel
+                await c_channel.send(f"```Now playing: {video.title}```")
+            else:
+                continue #do nothing and end the run of the loop if the first video is not the same as the popped queue item
+            while voice_channel.is_playing():
+                await sleep(1)
+            try:
+                playlist.pop(0)
+            except:
                 pass
+
+    @loop(seconds=154) #Checks if anythin gis playing every few minutes. If nothing, disconnect bot.
+    async def yt_stopper(self):
+        if client.voice_clients:
+            if client.voice_clients[0].is_playing():
+                    pass
+            else:
+                await client.voice_clients[0].disconnect()
+    yt_stopper.start()
+
+""" Pekofy Class: Add peko to every sentence """
+class pekofy:
+    def pekofy(input): #Peko.
+        output = input
+        delimiters = ['.',',','!','?']
+        res = any(ele in delimiters for ele in input)
+        if res:
+            output = output.replace("."," peko.")
+            output = output.replace(","," peko,")
+            output = output.replace("!"," peko!")
+            output = output.replace("?"," peko?")
         else:
-            await client.voice_clients[0].disconnect()
-yt_stopper.start()
-
-""" pekofy splitter """
-def pekofy(input): #Peko.
-    output = input
-    delimiters = ['.',',','!','?']
-    res = any(ele in delimiters for ele in input)
-    if res:
-        output = output.replace("."," peko.")
-        output = output.replace(","," peko,")
-        output = output.replace("!"," peko!")
-        output = output.replace("?"," peko?")
-    else:
-        output += " peko."
-    return output
-
+            output += " peko."
+        return output
 
 
 
 def duration_parsing(input):
     return str(datetime.timedelta(seconds=input))
-
 
 async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
     try:
@@ -288,7 +292,6 @@ async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
         print(str(message.author.name) + " is not in a channel.")
 
 
-glasses = "I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?"
 
-client.loop.create_task(yt_player()) #get the ytplay task to run in a loop
+client.loop.create_task(musicBot.yt_player()) #get the ytplay task to run in a loop
 client.run(TOKEN)
