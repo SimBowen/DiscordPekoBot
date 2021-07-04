@@ -53,7 +53,7 @@ async def on_message(message):
         emoji = ['↗️','↘️','↙️', '↖️'] #holds the reaction emojis
         for emote in emoji:
             await message.add_reaction(emote)
-        n = random.randint(1,10)
+        n = random.randint(1,11)
         """takes a random mp3 file"""
         file = "haha" + str(n) + ".mp3"
         await play_mp3(file,message) #awaits the invocation of play_mp3 method
