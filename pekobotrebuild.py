@@ -50,6 +50,7 @@ async def on_ready():
 """ Triggers on message, checks if there were previous messages to parse."""
 @client.event
 async def on_message(message):
+    """Play a sound in response to a triggerword"""
     if 'haha' in message.content.lower():
         emoji = ['↗️','↘️','↙️', '↖️'] #holds the reaction emojis
         for emote in emoji:
@@ -71,16 +72,28 @@ async def on_message(message):
     if 'friend' in message.content.lower():
         await play_mp3("friend.mp3", message)
 
+    """React to a trigger word"""
     if 'yep' in message.content.lower():
         id = 792035440428974111 #set emoji id
         emoji = client.get_emoji(id) #grab the emoji
         await message.add_reaction(emoji)
 
+    """Respond with a string to a trigger word"""
+    if 'glasses' in message.content.lower():
+        await respond(message,"I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?",[])
+
+    if 'dragon' in message.content.lower():
+        await respond(message,"Dragon deez nuts on your face peko~!",['↗️','↘️','↙️', '↖️'])
+
+
+    """Commands"""
+    """Pekofy Command"""
     if message.content == '!peko':
         c_channel = discord.utils.get(message.guild.text_channels, name='novalty') #Set specific text channel ot monitor for messages
         messages = await c_channel.history(limit=2).flatten() #Grab the 2nd last message in channel
         await message.channel.send(pekofy(messages[1].content)) #invokes pekofy and sends
 
+    """Music commands"""
     if message.content[0:5] == '!play':
         input = message.content[6:]
         total_duration = 0
@@ -146,7 +159,7 @@ async def on_message(message):
         await print_playlist(playlist, message.channel)
 
 
-    """CounterSide Stuff"""
+    """CounterSide Commands"""
     if "!raid" in message.content.lower() and message.author != client.user:
         by = message.author
         input = message.content.lower()
@@ -198,19 +211,9 @@ async def on_message(message):
             await message.channel.send(embed=embed)
         
 
-    """Respond a string to a trigger word"""
-    if 'glasses' in message.content.lower():
-        await respond(message,"I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?",[])
 
-    if 'dragon' in message.content.lower():
-        await respond(message,"Dragon deez nuts on your face peko~!",['↗️','↘️','↙️', '↖️'])
 
-"""Method to respond to a message with a string and react to the response with emojis"""
-async def respond(message,replytext,emoji=[]):
-    if (message.author != client.user):
-        reply = await message.reply(replytext)
-        for emote in emoji:
-            await reply.add_reaction(emote)
+
 
 async def print_playlist(list, channel): #builds playlist string
     videos = ""
@@ -254,7 +257,8 @@ async def yt_stopper():
             await client.voice_clients[0].disconnect()
 yt_stopper.start()
 
-""" pekofy splitter """
+"""Methods"""
+"""Method to Pekofy a String"""
 def pekofy(input): #Peko.
     output = input
     delimiters = ['.',',','!','?']
@@ -268,13 +272,14 @@ def pekofy(input): #Peko.
         output += " peko."
     return output
 
+"""Method to respond to a message with a string and react to the response with emojis"""
+async def respond(message,replytext,emoji=[]):
+    if (message.author != client.user):
+        reply = await message.reply(replytext)
+        for emote in emoji:
+            await reply.add_reaction(emote)
 
-
-
-def duration_parsing(input):
-    return str(datetime.timedelta(seconds=input))
-
-
+"""Method to play an mp3 file"""
 async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
     try:
         voice_channel = message.author.voice.channel # obtain the vc of author if applicable
@@ -291,7 +296,10 @@ async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
     else:
         print(str(message.author.name) + " is not in a channel.")
 
+"""Method to convert a time into a String"""
+def duration_parsing(input):
+    return str(datetime.timedelta(seconds=input))
 
-
+"""Main"""
 client.loop.create_task(yt_player()) #get the ytplay task to run in a loop
 client.run(TOKEN)
