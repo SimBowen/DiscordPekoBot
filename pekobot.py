@@ -210,8 +210,6 @@ async def on_message(message):
             embed = chara_formatting(character)
             await message.channel.send(embed=embed)
 
-
-
 """Methods"""
 """Method to Pekofy a String"""
 def pekofy(input): #Peko.
