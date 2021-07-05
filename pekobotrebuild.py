@@ -209,53 +209,8 @@ async def on_message(message):
         for character in characters:
             embed = chara_formatting(character)
             await message.channel.send(embed=embed)
-        
 
 
-
-
-
-async def print_playlist(list, channel): #builds playlist string
-    videos = ""
-    for i in range(len(list)):
-        if i == 0:
-            videos += '\nCurrent Song:\n' + playlist[i]
-            videos += '\n\nPlaylist:'
-        else:
-            videos += '\n' + str(i) + '. ' + playlist[i]
-    await channel.send(f'```{videos}```')
-
-async def yt_player(): #yt player loop/task
-    while True:
-        voice_channel = None
-        video = await yt_list.get() #pops the first ytvideo object from asyncio queue
-        current_track = await YTDLSource.from_url(video.url, loop=client.loop) #"player" is created using the method contained in YTDLSource. URL is extracted from ytvideo object
-        for vc in client.voice_clients: #Only works if bot is currently in voice channel. To be improved
-            voice_channel = vc
-        while voice_channel.is_playing():#Puts bot to sleep while track is playing. Stops bot from trying to play multiple songs at once due to loop
-            await sleep(1)
-        if(current_track.title == playlist[0]): #Lazy deletion is checked here. Checks if popped ytvideo name matches the first object in playlist. If so, play. 
-            voice_channel.play(current_track)
-            c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio') #retreives a specific text channel
-            await c_channel.send(f"```Now playing: {video.title}```")
-        else:
-            continue #do nothing and end the run of the loop if the first video is not the same as the popped queue item
-        while voice_channel.is_playing():
-            await sleep(1)
-        try:
-            playlist.pop(0)
-        except:
-            pass
-
-
-@loop(seconds=154) #Checks if anythin gis playing every few minutes. If nothing, disconnect bot.
-async def yt_stopper():
-    if client.voice_clients:
-        if client.voice_clients[0].is_playing():
-                pass
-        else:
-            await client.voice_clients[0].disconnect()
-yt_stopper.start()
 
 """Methods"""
 """Method to Pekofy a String"""
@@ -299,6 +254,50 @@ async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
 """Method to convert a time into a String"""
 def duration_parsing(input):
     return str(datetime.timedelta(seconds=input))
+
+"""Method to handle youtube player"""
+async def yt_player(): #yt player loop/task
+    while True:
+        voice_channel = None
+        video = await yt_list.get() #pops the first ytvideo object from asyncio queue
+        current_track = await YTDLSource.from_url(video.url, loop=client.loop) #"player" is created using the method contained in YTDLSource. URL is extracted from ytvideo object
+        for vc in client.voice_clients: #Only works if bot is currently in voice channel. To be improved
+            voice_channel = vc
+        while voice_channel.is_playing():#Puts bot to sleep while track is playing. Stops bot from trying to play multiple songs at once due to loop
+            await sleep(1)
+        if(current_track.title == playlist[0]): #Lazy deletion is checked here. Checks if popped ytvideo name matches the first object in playlist. If so, play.
+            voice_channel.play(current_track)
+            c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio') #retreives a specific text channel
+            await c_channel.send(f"```Now playing: {video.title}```")
+        else:
+            continue #do nothing and end the run of the loop if the first video is not the same as the popped queue item
+        while voice_channel.is_playing():
+            await sleep(1)
+        try:
+            playlist.pop(0)
+        except:
+            pass
+
+"""Method to disconnect bot after inactivity"""
+@loop(seconds=154) #Checks if anythin gis playing every few minutes. If nothing, disconnect bot.
+async def yt_stopper():
+    if client.voice_clients:
+        if client.voice_clients[0].is_playing():
+                pass
+        else:
+            await client.voice_clients[0].disconnect()
+yt_stopper.start()
+
+"""Method to handle display of the music playlist"""
+async def print_playlist(list, channel): #builds playlist string
+    videos = ""
+    for i in range(len(list)):
+        if i == 0:
+            videos += '\nCurrent Song:\n' + playlist[i]
+            videos += '\n\nPlaylist:'
+        else:
+            videos += '\n' + str(i) + '. ' + playlist[i]
+    await channel.send(f'```{videos}```')
 
 """Main"""
 client.loop.create_task(yt_player()) #get the ytplay task to run in a loop
