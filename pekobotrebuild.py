@@ -144,7 +144,9 @@ async def on_message(message):
         entry = int(message.content[6:])
         playlist.pop(entry)
         await print_playlist(playlist, message.channel)
-    
+
+
+    """CounterSide Stuff"""
     if "!raid" in message.content.lower() and message.author != client.user:
         by = message.author
         input = message.content.lower()
@@ -196,21 +198,19 @@ async def on_message(message):
             await message.channel.send(embed=embed)
         
 
-
-    if 'glasses' in message.content.lower() : #Glasses.
-        if message.author != client.user:
-            glasses = "I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?"
-            reply = await message.reply(glasses)
+    """Respond a string to a trigger word"""
+    if 'glasses' in message.content.lower():
+        await respond(message,"I gotchu Takes a deep breath.\nGlasses are really versatile. First, you can have glasses-wearing girls take them off and suddenly become beautiful, or have girls wearing glasses flashing those cute grins, or have girls stealing the protagonist's glasses and putting them on like, \"Haha, got your glasses!\" That's just way too cute! Also, boys with glasses! I really like when their glasses have that suspicious looking gleam, and it's amazing how it can look really cool or just be a joke. I really like how it can fulfill all those abstract needs. Being able to switch up the styles and colors of glasses based on your mood is a lot of fun too! It's actually so much fun! You have those half rim glasses, or the thick frame glasses, everything! It's like you're enjoying all these kinds of glasses at a buffet. I really want Luna to try some on or Marine to try some on to replace her eyepatch. We really need glasses to become a thing in hololive and start selling them for HoloComi. Don't. You. Think. We. Really. Need. To. Officially. Give. Everyone. Glasses?",[])
 
     if 'dragon' in message.content.lower():
+        await respond(message,"Dragon deez nuts on your face peko~!",['↗️','↘️','↙️', '↖️'])
 
-        if message.author != client.user:
-            reply = await message.reply("Dragon deez nuts on your face peko~!")
-            emoji = ['↗️','↘️','↙️', '↖️']
-            for emote in emoji:
-                await reply.add_reaction(emote)
-
-
+"""Method to respond to a message with a string and react to the response with emojis"""
+async def respond(message,replytext,emoji=[]):
+    if (message.author != client.user):
+        reply = await message.reply(replytext)
+        for emote in emoji:
+            await reply.add_reaction(emote)
 
 async def print_playlist(list, channel): #builds playlist string
     videos = ""
