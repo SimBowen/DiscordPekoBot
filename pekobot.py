@@ -134,6 +134,7 @@ async def respond(message,replytext,emoji=[]):
         for emote in emoji:
             await reply.add_reaction(emote)
 
+"""Method to react to a message with emojis using emojiID"""
 async def react(message,emojiID):
     emoji = client.get_emoji(emojiID)  # grab the emoji
     await message.add_reaction(emoji)
