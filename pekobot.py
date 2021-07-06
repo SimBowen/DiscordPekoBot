@@ -2,23 +2,24 @@
 
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
 import asyncio
-import os
-import discord
-from dotenv import load_dotenv
-from discord.ext.tasks import loop
-from asyncio import sleep
-import random
 import datetime
-from urllib.parse import parse_qs, urlparse
-from yt import ytvideo
-from yt import ytplaylist
-from yt import YTDLSource
-from spotify import spotify_parsing
+import os
 import random
+from asyncio import sleep
+from datetime import datetime, timedelta
+
+import discord
 import pytz
-from datetime import datetime,timedelta
-from CS import chara_search
+from discord.ext.tasks import loop
+from dotenv import load_dotenv
+
 from CS import chara_formatting
+from CS import chara_search
+from spotify import spotify_parsing
+from yt import YTDLSource
+from yt import ytplaylist
+from yt import ytvideo
+
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
