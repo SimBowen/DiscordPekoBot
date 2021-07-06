@@ -2,24 +2,23 @@
 
 """ git commit the changes first. 'git push heroku master' to update server build. 'heroku logs -a pekobotnewob' to see logs """
 import asyncio
-import datetime
 import os
-import random
-from asyncio import sleep
-from datetime import datetime
-
 import discord
-import pytz
-from discord.ext.tasks import loop
 from dotenv import load_dotenv
-
-from CS import chara_formatting
-from CS import chara_search
-from spotify import spotify_parsing
-from yt import YTDLSource
-from yt import ytplaylist
+from discord.ext.tasks import loop
+from asyncio import sleep
+import random
+import datetime
+from urllib.parse import parse_qs, urlparse
 from yt import ytvideo
-
+from yt import ytplaylist
+from yt import YTDLSource
+from spotify import spotify_parsing
+import random
+import pytz
+from datetime import datetime,timedelta
+from CS import chara_search
+from CS import chara_formatting
 load_dotenv()
 
 """ Gets the discord bot token and server name from .env file """
@@ -95,68 +94,16 @@ async def on_message(message):
 
     """Music commands"""
     if message.content[0:5] == '!play':
-        input = message.content[6:]
-        total_duration = 0
-        songs_to_add = []
-        print(input)
-        if 'spotify' in input:
-            song_list = spotify_parsing(input)
-            for item in song_list:
-                video = ytvideo(item)
-                total_duration += video.seconds
-                songs_to_add.append(video)
-        elif '&list=' in input or '?list=' in input: #checks if input is a playlist
-            videolist = ytplaylist(input) #creates ytplaylist object from input url
-            songs_to_add.extend(videolist.ytvideolist) #appends the list of ytvideo objects in videolist ot songs_to_add
-            total_duration += videolist.seconds
-        else:
-            video = ytvideo(input) #creates yt video object
-            await message.channel.send(f"Song found: {video.url}")
-            total_duration += video.seconds
-            songs_to_add.append(video) #appends to pending list of songs from the invocaiton of !play command
-        print(total_duration)
-        if total_duration > 600:
-            reply = await message.reply('Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']')
-            await reply.add_reaction('👍')
-            await reply.add_reaction('👎')
-            def check(reaction, user):
-                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == reply
-            try:
-                reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
-            except asyncio.TimeoutError:
-                await message.channel.send('```Song not added peko!```')
-                return 
-        try:
-            voice_channel = message.author.voice.channel
-            await voice_channel.connect()
-        except:
-            pass
-        await message.delete() #deletes the command message after responding
-        for item in songs_to_add:
-            await yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
-            playlist.append(item.title) #playlist is a normal list for normal access
-        if len(songs_to_add) == 1:
-            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']' + '[Requested by: ' + message.author.name + ']```')
+        await musicClass.playCommand(message)
 
     if message.content[0:6] == '!clear':
-        while len(playlist) > 1: #remove everything from the asyncio playlist and normal playlist
-            playlist.pop(0)
-            await yt_list.get()
-        playlist.pop(0) #do the final pop from normal list to avoid erros with asyncio queue
-        for x in client.voice_clients: #this removes the final item from asyncio queue
-                x.stop()
-        await message.channel.send('```Playlist cleared!```')
+        await musicClass.clearCommand(message)
 
     if message.content[0:6] == '!queue': #invokes print playlist method. Needs to be awaited as it prints a message
-        await print_playlist(playlist, message.channel)
+        await musicClass.queueCommand(message)
 
-    if message.content == '!skip': #stops the current song. playlist is handled by playback loop
-        for x in client.voice_clients:
-                return x.stop()
-    elif message.content[0:5] == '!skip': #uses lazy deletion in the regular list. actual skip is handled by the playback loop
-        entry = int(message.content[6:])
-        playlist.pop(entry)
-        await print_playlist(playlist, message.channel)
+    if '!skip' in message.content:
+        await musicClass.skipCommand(message)
 
 
     """CounterSide Commands"""
@@ -210,8 +157,6 @@ async def on_message(message):
             embed = chara_formatting(character)
             await message.channel.send(embed=embed)
 
-
-
 """Methods"""
 """Method to Pekofy a String"""
 def pekofy(input): #Peko.
@@ -251,10 +196,6 @@ async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
     else:
         print(str(message.author.name) + " is not in a channel.")
 
-"""Method to convert a time into a String"""
-def duration_parsing(input):
-    return str(datetime.timedelta(seconds=input))
-
 """Method to handle youtube player"""
 async def yt_player(): #yt player loop/task
     while True:
@@ -288,16 +229,87 @@ async def yt_stopper():
             await client.voice_clients[0].disconnect()
 yt_stopper.start()
 
-"""Method to handle display of the music playlist"""
-async def print_playlist(list, channel): #builds playlist string
-    videos = ""
-    for i in range(len(list)):
-        if i == 0:
-            videos += '\nCurrent Song:\n' + playlist[i]
-            videos += '\n\nPlaylist:'
+"""Music Class"""
+class musicClass:
+    async def playCommand(message):
+        input = message.content[6:]
+        total_duration = 0
+        songs_to_add = []
+        print(input)
+        if 'spotify' in input:
+            song_list = spotify_parsing(input)
+            for item in song_list:
+                video = ytvideo(item)
+                total_duration += video.seconds
+                songs_to_add.append(video)
+        elif '&list=' in input or '?list=' in input: #checks if input is a playlist
+            videolist = ytplaylist(input) #creates ytplaylist object from input url
+            songs_to_add.extend(videolist.ytvideolist) #appends the list of ytvideo objects in videolist ot songs_to_add
+            total_duration += videolist.seconds
         else:
-            videos += '\n' + str(i) + '. ' + playlist[i]
-    await channel.send(f'```{videos}```')
+            video = ytvideo(input) #creates yt video object
+            await message.channel.send(f"Song found: {video.url}")
+            total_duration += video.seconds
+            songs_to_add.append(video) #appends to pending list of songs from the invocaiton of !play command
+        print(total_duration)
+        if total_duration > 600:
+            reply = await message.reply('Are you sure peko? The duration is : [' + musicClass.duration_parsing(total_duration) +']')
+            await reply.add_reaction('👍')
+            await reply.add_reaction('👎')
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == reply
+            try:
+                reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
+            except asyncio.TimeoutError:
+                await message.channel.send('```Song not added peko!```')
+                return
+        try:
+            voice_channel = message.author.voice.channel
+            await voice_channel.connect()
+        except:
+            pass
+        await message.delete() #deletes the command message after responding
+        for item in songs_to_add:
+            await yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
+            playlist.append(item.title) #playlist is a normal list for normal access
+        if len(songs_to_add) == 1:
+            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + musicClass.duration_parsing(songs_to_add[0].seconds) + ']' + '[Requested by: ' + message.author.name + ']```')
+
+    async def clearCommand(message):
+        while len(playlist) > 1: #remove everything from the asyncio playlist and normal playlist
+            playlist.pop(0)
+            await yt_list.get()
+        playlist.pop(0) #do the final pop from normal list to avoid erros with asyncio queue
+        for x in client.voice_clients: #this removes the final item from asyncio queue
+                x.stop()
+        await message.channel.send('```Playlist cleared!```')
+
+    async def queueCommand(message):
+        await musicClass.print_playlist(playlist, message.channel)
+
+    async def skipCommand(message):
+        if message.content == '!skip':  # stops the current song. playlist is handled by playback loop
+            for x in client.voice_clients:
+                return x.stop()
+        elif message.content[0:5] == '!skip':  # uses lazy deletion in the regular list. actual skip is handled by the playback loop
+            entry = int(message.content[6:])
+            playlist.pop(entry)
+            await musicClass.print_playlist(playlist, message.channel)
+
+    """Method to convert a time into a String"""
+    def duration_parsing(input):
+        return str(timedelta(seconds=input))
+
+    """Method to handle display of the music playlist"""
+    async def print_playlist(list, channel):  # builds playlist string
+        videos = ""
+        for i in range(len(list)):
+            if i == 0:
+                videos += '\nCurrent Song:\n' + playlist[i]
+                videos += '\n\nPlaylist:'
+            else:
+                videos += '\n' + str(i) + '. ' + playlist[i]
+        await channel.send(f'```{videos}```')
 
 """Main"""
 client.loop.create_task(yt_player()) #get the ytplay task to run in a loop
