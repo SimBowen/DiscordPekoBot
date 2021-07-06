@@ -108,54 +108,11 @@ async def on_message(message):
 
     """CounterSide Commands"""
     if "!raid" in message.content.lower() and message.author != client.user:
-        by = message.author
-        input = message.content.lower()
-        elements = input.split(' ')
-        try:
-            level = elements[1]
-            float(level)
-        except:
-            await message.reply("Invalid raid command format!")
-            return
-        GMT8 = pytz.timezone('Asia/Singapore')
-        time = datetime.now(GMT8)
-        embed=discord.Embed(title="Raid Alert!", url="", description="This is a raid alert. Kindly enter and wait for 3 minutes before killing the raid boss!", color=0xFF5733)
-        embed.set_author(name=by.display_name, url="")
-        embed.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
-        embed.add_field(name="Level", value=level, inline=True)
-        embed.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
-        embed.add_field(name="Status", value="Valid")
-        embed.set_footer(text="This message will time out 3 minutes after the time it was sent!")
-        alert = await message.channel.send(embed=embed)
-        await message.delete()
-        await alert.add_reaction('👍')
-        embedupdate=discord.Embed(title="Old Raid", url="", description="This is an old raid alert.", color=0xFF5733)
-        embedupdate.set_author(name=by.display_name, url="")
-        embedupdate.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
-        embedupdate.add_field(name="Level", value=level, inline=True)
-        embedupdate.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
-        embedupdate.add_field(name="Status", value="Expired")
-        def check(reaction, user):
-            return user == message.author and str(reaction.emoji) == '👍' and reaction.message == alert
-        try:
-            await client.wait_for('reaction_add', timeout=180.0, check=check)
-            embedupdate.set_footer(text="Raid boss has been killed!")
-            await alert.edit(embed = embedupdate)
-            return 
-        except asyncio.TimeoutError:
-            embedupdate.set_footer(text="3 minutes has elapsed. Raid boss may have been killed!")
-            await alert.edit(embed = embedupdate)
-            return
+        await countersideClass.raid(message)
 
     if "!cs" in message.content.lower():
-        search = message.content[4:]
-        characters = chara_search(search)
-        if characters == []:
-            await message.channel.send("Invalid search!")
-            return
-        for character in characters:
-            embed = chara_formatting(character)
-            await message.channel.send(embed=embed)
+        await countersideClass.charaSearch(message)
+
 
 """Methods"""
 """Method to Pekofy a String"""
@@ -310,6 +267,63 @@ class musicClass:
             else:
                 videos += '\n' + str(i) + '. ' + playlist[i]
         await channel.send(f'```{videos}```')
+
+"""CounterSide Class"""
+class countersideClass:
+    async def raid(message):
+            by = message.author
+            input = message.content.lower()
+            elements = input.split(' ')
+            try:
+                level = elements[1]
+                float(level)
+            except:
+                await message.reply("Invalid raid command format!")
+                return
+            GMT8 = pytz.timezone('Asia/Singapore')
+            time = datetime.now(GMT8)
+            embed = discord.Embed(title="Raid Alert!", url="",
+                                  description="This is a raid alert. Kindly enter and wait for 3 minutes before killing the raid boss!",
+                                  color=0xFF5733)
+            embed.set_author(name=by.display_name, url="")
+            embed.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
+            embed.add_field(name="Level", value=level, inline=True)
+            embed.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
+            embed.add_field(name="Status", value="Valid")
+            embed.set_footer(text="This message will time out 3 minutes after the time it was sent!")
+            alert = await message.channel.send(embed=embed)
+            await message.delete()
+            await alert.add_reaction('👍')
+            embedupdate = discord.Embed(title="Old Raid", url="", description="This is an old raid alert.",
+                                        color=0xFF5733)
+            embedupdate.set_author(name=by.display_name, url="")
+            embedupdate.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
+            embedupdate.add_field(name="Level", value=level, inline=True)
+            embedupdate.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
+            embedupdate.add_field(name="Status", value="Expired")
+
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == alert
+
+            try:
+                await client.wait_for('reaction_add', timeout=180.0, check=check)
+                embedupdate.set_footer(text="Raid boss has been killed!")
+                await alert.edit(embed=embedupdate)
+                return
+            except asyncio.TimeoutError:
+                embedupdate.set_footer(text="3 minutes has elapsed. Raid boss may have been killed!")
+                await alert.edit(embed=embedupdate)
+                return
+
+    async def charaSearch(message):
+        search = message.content[4:]
+        characters = chara_search(search)
+        if characters == []:
+            await message.channel.send("Invalid search!")
+            return
+        for character in characters:
+            embed = chara_formatting(character)
+            await message.channel.send(embed=embed)
 
 """Main"""
 client.loop.create_task(yt_player()) #get the ytplay task to run in a loop
