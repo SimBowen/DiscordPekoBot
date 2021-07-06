@@ -6,7 +6,7 @@ import datetime
 import os
 import random
 from asyncio import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import discord
 import pytz
@@ -74,9 +74,10 @@ async def on_message(message):
 
     """React to a trigger word"""
     if 'yep' in message.content.lower():
-        id = 792035440428974111 #set emoji id
-        emoji = client.get_emoji(id) #grab the emoji
-        await message.add_reaction(emoji)
+        await reactCustom(message,792035440428974111)
+
+    if 'hmm' in message.content.lower():
+        await react(message,'🤔')
 
     """Respond with a string to a trigger word"""
     if 'glasses' in message.content.lower():
@@ -95,120 +96,25 @@ async def on_message(message):
 
     """Music commands"""
     if message.content[0:5] == '!play':
-        input = message.content[6:]
-        total_duration = 0
-        songs_to_add = []
-        print(input)
-        if 'spotify' in input:
-            song_list = spotify_parsing(input)
-            for item in song_list:
-                video = ytvideo(item)
-                total_duration += video.seconds
-                songs_to_add.append(video)
-        elif '&list=' in input or '?list=' in input: #checks if input is a playlist
-            videolist = ytplaylist(input) #creates ytplaylist object from input url
-            songs_to_add.extend(videolist.ytvideolist) #appends the list of ytvideo objects in videolist ot songs_to_add
-            total_duration += videolist.seconds
-        else:
-            video = ytvideo(input) #creates yt video object
-            await message.channel.send(f"Song found: {video.url}")
-            total_duration += video.seconds
-            songs_to_add.append(video) #appends to pending list of songs from the invocaiton of !play command
-        print(total_duration)
-        if total_duration > 600:
-            reply = await message.reply('Are you sure peko? The duration is : [' + duration_parsing(total_duration) +']')
-            await reply.add_reaction('👍')
-            await reply.add_reaction('👎')
-            def check(reaction, user):
-                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == reply
-            try:
-                reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
-            except asyncio.TimeoutError:
-                await message.channel.send('```Song not added peko!```')
-                return 
-        try:
-            voice_channel = message.author.voice.channel
-            await voice_channel.connect()
-        except:
-            pass
-        await message.delete() #deletes the command message after responding
-        for item in songs_to_add:
-            await yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
-            playlist.append(item.title) #playlist is a normal list for normal access
-        if len(songs_to_add) == 1:
-            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + duration_parsing(songs_to_add[0].seconds) + ']' + '[Requested by: ' + message.author.name + ']```')
+        await musicClass.playCommand(message)
 
     if message.content[0:6] == '!clear':
-        while len(playlist) > 1: #remove everything from the asyncio playlist and normal playlist
-            playlist.pop(0)
-            await yt_list.get()
-        playlist.pop(0) #do the final pop from normal list to avoid erros with asyncio queue
-        for x in client.voice_clients: #this removes the final item from asyncio queue
-                x.stop()
-        await message.channel.send('```Playlist cleared!```')
+        await musicClass.clearCommand(message)
 
     if message.content[0:6] == '!queue': #invokes print playlist method. Needs to be awaited as it prints a message
-        await print_playlist(playlist, message.channel)
+        await musicClass.queueCommand(message)
 
-    if message.content == '!skip': #stops the current song. playlist is handled by playback loop
-        for x in client.voice_clients:
-                return x.stop()
-    elif message.content[0:5] == '!skip': #uses lazy deletion in the regular list. actual skip is handled by the playback loop
-        entry = int(message.content[6:])
-        playlist.pop(entry)
-        await print_playlist(playlist, message.channel)
+    if '!skip' in message.content:
+        await musicClass.skipCommand(message)
 
 
     """CounterSide Commands"""
     if "!raid" in message.content.lower() and message.author != client.user:
-        by = message.author
-        input = message.content.lower()
-        elements = input.split(' ')
-        try:
-            level = elements[1]
-            float(level)
-        except:
-            await message.reply("Invalid raid command format!")
-            return
-        GMT8 = pytz.timezone('Asia/Singapore')
-        time = datetime.now(GMT8)
-        embed=discord.Embed(title="Raid Alert!", url="", description="This is a raid alert. Kindly enter and wait for 3 minutes before killing the raid boss!", color=0xFF5733)
-        embed.set_author(name=by.display_name, url="")
-        embed.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
-        embed.add_field(name="Level", value=level, inline=True)
-        embed.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
-        embed.add_field(name="Status", value="Valid")
-        embed.set_footer(text="This message will time out 3 minutes after the time it was sent!")
-        alert = await message.channel.send(embed=embed)
-        await message.delete()
-        await alert.add_reaction('👍')
-        embedupdate=discord.Embed(title="Old Raid", url="", description="This is an old raid alert.", color=0xFF5733)
-        embedupdate.set_author(name=by.display_name, url="")
-        embedupdate.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
-        embedupdate.add_field(name="Level", value=level, inline=True)
-        embedupdate.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
-        embedupdate.add_field(name="Status", value="Expired")
-        def check(reaction, user):
-            return user == message.author and str(reaction.emoji) == '👍' and reaction.message == alert
-        try:
-            await client.wait_for('reaction_add', timeout=180.0, check=check)
-            embedupdate.set_footer(text="Raid boss has been killed!")
-            await alert.edit(embed = embedupdate)
-            return 
-        except asyncio.TimeoutError:
-            embedupdate.set_footer(text="3 minutes has elapsed. Raid boss may have been killed!")
-            await alert.edit(embed = embedupdate)
-            return
+        await countersideClass.raid(message)
 
     if "!cs" in message.content.lower():
-        search = message.content[4:]
-        characters = chara_search(search)
-        if characters == []:
-            await message.channel.send("Invalid search!")
-            return
-        for character in characters:
-            embed = chara_formatting(character)
-            await message.channel.send(embed=embed)
+        await countersideClass.charaSearch(message)
+
 
 """Methods"""
 """Method to Pekofy a String"""
@@ -232,6 +138,15 @@ async def respond(message,replytext,emoji=[]):
         for emote in emoji:
             await reply.add_reaction(emote)
 
+"""Method to react to a message with a string and react to the response with custom emojis"""
+async def reactCustom(message,emojiID):
+    emoji = client.get_emoji(emojiID)  # grab the emoji
+    await message.add_reaction(emoji)
+
+"""Method to react to a message with a string and react to the response with standard emojis"""
+async def react(message,emoji):
+    await message.add_reaction(emoji)
+
 """Method to play an mp3 file"""
 async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
     try:
@@ -248,10 +163,6 @@ async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
         await vc.disconnect()
     else:
         print(str(message.author.name) + " is not in a channel.")
-
-"""Method to convert a time into a String"""
-def duration_parsing(input):
-    return str(datetime.timedelta(seconds=input))
 
 """Method to handle youtube player"""
 async def yt_player(): #yt player loop/task
@@ -286,16 +197,144 @@ async def yt_stopper():
             await client.voice_clients[0].disconnect()
 yt_stopper.start()
 
-"""Method to handle display of the music playlist"""
-async def print_playlist(list, channel): #builds playlist string
-    videos = ""
-    for i in range(len(list)):
-        if i == 0:
-            videos += '\nCurrent Song:\n' + playlist[i]
-            videos += '\n\nPlaylist:'
+"""Music Class"""
+class musicClass:
+    async def playCommand(message):
+        input = message.content[6:]
+        total_duration = 0
+        songs_to_add = []
+        print(input)
+        if 'spotify' in input:
+            song_list = spotify_parsing(input)
+            for item in song_list:
+                video = ytvideo(item)
+                total_duration += video.seconds
+                songs_to_add.append(video)
+        elif '&list=' in input or '?list=' in input: #checks if input is a playlist
+            videolist = ytplaylist(input) #creates ytplaylist object from input url
+            songs_to_add.extend(videolist.ytvideolist) #appends the list of ytvideo objects in videolist ot songs_to_add
+            total_duration += videolist.seconds
         else:
-            videos += '\n' + str(i) + '. ' + playlist[i]
-    await channel.send(f'```{videos}```')
+            video = ytvideo(input) #creates yt video object
+            await message.channel.send(f"Song found: {video.url}")
+            total_duration += video.seconds
+            songs_to_add.append(video) #appends to pending list of songs from the invocaiton of !play command
+        print(total_duration)
+        if total_duration > 600:
+            reply = await message.reply('Are you sure peko? The duration is : [' + musicClass.duration_parsing(total_duration) +']')
+            await reply.add_reaction('👍')
+            await reply.add_reaction('👎')
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == reply
+            try:
+                reaction, user = await client.wait_for('reaction_add', timeout=20.0, check=check)
+            except asyncio.TimeoutError:
+                await message.channel.send('```Song not added peko!```')
+                return
+        try:
+            voice_channel = message.author.voice.channel
+            await voice_channel.connect()
+        except:
+            pass
+        await message.delete() #deletes the command message after responding
+        for item in songs_to_add:
+            await yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
+            playlist.append(item.title) #playlist is a normal list for normal access
+        if len(songs_to_add) == 1:
+            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + musicClass.duration_parsing(songs_to_add[0].seconds) + ']' + '[Requested by: ' + message.author.name + ']```')
+
+    async def clearCommand(message):
+        while len(playlist) > 1: #remove everything from the asyncio playlist and normal playlist
+            playlist.pop(0)
+            await yt_list.get()
+        playlist.pop(0) #do the final pop from normal list to avoid erros with asyncio queue
+        for x in client.voice_clients: #this removes the final item from asyncio queue
+                x.stop()
+        await message.channel.send('```Playlist cleared!```')
+
+    async def queueCommand(message):
+        await musicClass.print_playlist(playlist, message.channel)
+
+    async def skipCommand(message):
+        if message.content == '!skip':  # stops the current song. playlist is handled by playback loop
+            for x in client.voice_clients:
+                return x.stop()
+        elif message.content[0:5] == '!skip':  # uses lazy deletion in the regular list. actual skip is handled by the playback loop
+            entry = int(message.content[6:])
+            playlist.pop(entry)
+            await musicClass.print_playlist(playlist, message.channel)
+
+    """Method to convert a time into a String"""
+    def duration_parsing(input):
+        return str(timedelta(seconds=input))
+
+    """Method to handle display of the music playlist"""
+    async def print_playlist(list, channel):  # builds playlist string
+        videos = ""
+        for i in range(len(list)):
+            if i == 0:
+                videos += '\nCurrent Song:\n' + playlist[i]
+                videos += '\n\nPlaylist:'
+            else:
+                videos += '\n' + str(i) + '. ' + playlist[i]
+        await channel.send(f'```{videos}```')
+
+"""CounterSide Class"""
+class countersideClass:
+    async def raid(message):
+            by = message.author
+            input = message.content.lower()
+            elements = input.split(' ')
+            try:
+                level = elements[1]
+                float(level)
+            except:
+                await message.reply("Invalid raid command format!")
+                return
+            GMT8 = pytz.timezone('Asia/Singapore')
+            time = datetime.now(GMT8)
+            embed = discord.Embed(title="Raid Alert!", url="",
+                                  description="This is a raid alert. Kindly enter and wait for 3 minutes before killing the raid boss!",
+                                  color=0xFF5733)
+            embed.set_author(name=by.display_name, url="")
+            embed.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
+            embed.add_field(name="Level", value=level, inline=True)
+            embed.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
+            embed.add_field(name="Status", value="Valid")
+            embed.set_footer(text="This message will time out 3 minutes after the time it was sent!")
+            alert = await message.channel.send(embed=embed)
+            await message.delete()
+            await alert.add_reaction('👍')
+            embedupdate = discord.Embed(title="Old Raid", url="", description="This is an old raid alert.",
+                                        color=0xFF5733)
+            embedupdate.set_author(name=by.display_name, url="")
+            embedupdate.set_thumbnail(url="https://i.imgur.com/xpUtROZ.png")
+            embedupdate.add_field(name="Level", value=level, inline=True)
+            embedupdate.add_field(name="Time Sent (GMT+8)", value=time.strftime('%Y-%m-%d %H:%M:%S'), inline=True)
+            embedupdate.add_field(name="Status", value="Expired")
+
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '👍' and reaction.message == alert
+
+            try:
+                await client.wait_for('reaction_add', timeout=180.0, check=check)
+                embedupdate.set_footer(text="Raid boss has been killed!")
+                await alert.edit(embed=embedupdate)
+                return
+            except asyncio.TimeoutError:
+                embedupdate.set_footer(text="3 minutes has elapsed. Raid boss may have been killed!")
+                await alert.edit(embed=embedupdate)
+                return
+
+    async def charaSearch(message):
+        search = message.content[4:]
+        characters = chara_search(search)
+        if characters == []:
+            await message.channel.send("Invalid search!")
+            return
+        for character in characters:
+            embed = chara_formatting(character)
+            await message.channel.send(embed=embed)
 
 """Main"""
 client.loop.create_task(yt_player()) #get the ytplay task to run in a loop
