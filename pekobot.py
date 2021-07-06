@@ -73,9 +73,7 @@ async def on_message(message):
 
     """React to a trigger word"""
     if 'yep' in message.content.lower():
-        id = 792035440428974111 #set emoji id
-        emoji = client.get_emoji(id) #grab the emoji
-        await message.add_reaction(emoji)
+        await react(message,792035440428974111)
 
     """Respond with a string to a trigger word"""
     if 'glasses' in message.content.lower():
@@ -135,6 +133,10 @@ async def respond(message,replytext,emoji=[]):
         reply = await message.reply(replytext)
         for emote in emoji:
             await reply.add_reaction(emote)
+
+async def react(message,emojiID):
+    emoji = client.get_emoji(emojiID)  # grab the emoji
+    await message.add_reaction(emoji)
 
 """Method to play an mp3 file"""
 async def play_mp3(mp3, message): #takes in the mp3 file name and message data.
