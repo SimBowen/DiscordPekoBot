@@ -147,7 +147,7 @@ async def yt_player(parser, client): #yt player loop/task
             print("extracting")
             temp.extractMP3()
             voice_channel.play(discord.FFmpegPCMAudio('temp.mp3'))
-            c_channel = discord.utils.get(client.guilds[0].text_channels, name='test') #retreives a specific text channel
+            c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio') #retreives a specific text channel
             await c_channel.send(f"```Now playing: {video.title}```")
         else:
             continue #do nothing and end the run of the loop if the first video is not the same as the popped queue item
