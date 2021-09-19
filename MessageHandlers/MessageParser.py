@@ -1,7 +1,7 @@
 
 from CS.Database import CS_Database
-from MediaCommands import mediaQueue
-from MessageReactions import *
+from MessageHandlers.MediaCommands import mediaQueue
+from MessageHandlers.MessageReactions import *
 
 class MessageParser:
     def __init__(self):

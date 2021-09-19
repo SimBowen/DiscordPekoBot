@@ -5,8 +5,8 @@ import os
 import discord
 from discord.ext.tasks import loop
 from dotenv import load_dotenv
-from MediaCommands import yt_player
-from MessageParser import MessageParser
+from Media.MediaHandlers import yt_player
+from MessageHandlers.MessageParser import MessageParser
 
 load_dotenv()
 

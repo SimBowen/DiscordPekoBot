@@ -1,6 +1,6 @@
 import random
 import discord
-from MediaCommands import play_mp3
+from Media.MediaHandlers import play_mp3
 from discord.ext.tasks import loop
 
 intents = discord.Intents.default()
