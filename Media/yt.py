@@ -1,3 +1,4 @@
+from datetime import timedelta
 from urllib.parse import parse_qs, urlparse
 import googleapiclient.discovery
 from dotenv import load_dotenv
@@ -57,12 +58,15 @@ class ytplaylist:
 
 
 class ytvideo:
-    def __init__(self,input):
+    def __init__(self,input,requestor):
+        self.requestor = requestor
         self.url = self.geturl(input)
         self.data = self.getdata(self.url)
         self.duration = self.data['contentDetails']['duration']
         self.title = self.data['snippet']['title']
+        self.thumbnail = self.data['snippet']['thumbnails']['default']['url']
         self.seconds = self.ytDurationToSeconds(self.duration)
+        self.time = self.duration_parsing(self.seconds)
 
     classmethod
     def geturl(self, input):
@@ -119,5 +123,8 @@ class ytvideo:
 
             value = ''
         return week + day + hour + min + sec
+    classmethod
+    def duration_parsing(self, input):
+        return str(timedelta(seconds=input))
 
 

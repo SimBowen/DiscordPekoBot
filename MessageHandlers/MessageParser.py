@@ -6,15 +6,20 @@ from MessageHandlers.MessageReactions import *
 class MessageParser:
     def __init__(self):
         self.commandList = ["haha","horny","ehe","pekora","friend",
-                        "yep","hmm","glasses","dragon","!cs","!play","!skip","!queue","!clear"]
+                        "yep","hmm","glasses","dragon","!cs","!p","!s","!q","!c","!play","!skip","!queue","!clear"]
         self.cs = CS_Database()
         self.mediaQueue = mediaQueue()
 
     classmethod
     def parseCommand(self, message):
-        for command in self.commandList:
-            if command in message.content.lower():
-                return str(command)
+        i = message.content.find(' ',0)
+        if ( i!= -1):
+            command = message.content[:i].lower()
+        else:
+            command = message.content
+            print(command)
+        if command in self.commandList:
+            return str(command)
     classmethod
     async def parseMessage(self, client, message):
         command = str(self.parseCommand(message))
@@ -27,13 +32,13 @@ class MessageParser:
     async def commandParser(self, client, command, message):
         if command == "!cs":
             await self.cs.searchCommand(message)
-        elif command == "!play":
+        elif command == "!p" or command == "!play":
             await self.mediaQueue.playCommand(client, message) 
-        elif command == "!skip":
+        elif command == "!s" or command == "!skip":
             await self.mediaQueue.skipCommand(client, message)
-        elif command == "!clear":
+        elif command == "!c" or command == "!clear":
             await self.mediaQueue.clearCommand(client, message)
-        elif command == "!queue":
+        elif command == "!q" or command == "!queue":
             await self.mediaQueue.queueCommand(message)    
     
 

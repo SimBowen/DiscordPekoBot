@@ -1,6 +1,6 @@
 import discord
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def cs_chara(data):
@@ -70,3 +70,21 @@ async def raid(author, message):
     embedupdate.add_field(name="Status", value="Expired")
 
     embeds.append(embedupdate)
+
+
+
+def musicEmbed(ytvideo, index):
+    embed = discord.Embed(title=ytvideo.title,description=ytvideo.url, color=0xFF5733)
+    embed.set_author(name=ytvideo.requestor, url="")
+    embed.set_thumbnail(url=ytvideo.thumbnail)
+    embed.add_field(name="Duration", value=ytvideo.time, inline=True)
+    embed.add_field(name="Pos. in Queue", value=index, inline=True)
+    return embed
+
+def nowPlaying(ytvideo):
+    embed = discord.Embed(title=ytvideo.title,description=ytvideo.url, color=0xFF5733)
+    embed.set_author(name="Now Playing:", url="")
+    embed.set_thumbnail(url=ytvideo.thumbnail)
+    embed.add_field(name="Duration", value=ytvideo.time, inline=True)
+    embed.add_field(name="Requested by", value=ytvideo.requestor, inline=True)
+    return embed

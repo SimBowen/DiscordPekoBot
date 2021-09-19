@@ -1,3 +1,4 @@
+from MessageHandlers.embeds import nowPlaying
 import discord
 from asyncio import sleep
 from Media.pytube import pytubemp3
@@ -64,7 +65,8 @@ async def yt_player(parser, client): #yt player loop/task
         if(current_track.title == parser.mediaQueue.firstTrack()): #Lazy deletion is checked here. Checks if popped ytvideo name matches the first object in playlist. If so, play.
             voice_channel.play(current_track)
             c_channel = discord.utils.get(client.guilds[0].text_channels, name='radio') #retreives a specific text channel
-            await c_channel.send(f"```Now playing: {video.title}```")
+            embed = nowPlaying(video)
+            await c_channel.send(embed = embed)
         else:
             continue #do nothing and end the run of the loop if the first video is not the same as the popped queue item
         while voice_channel.is_playing():

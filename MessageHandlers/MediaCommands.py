@@ -1,3 +1,4 @@
+from MessageHandlers.embeds import musicEmbed
 from discord.ext.tasks import loop
 import asyncio
 from Media.spotify import spotify_parsing
@@ -16,14 +17,16 @@ class mediaQueue():
 
     classmethod
     async def playCommand(self, client, message):
-        input = message.content[6:]
+        i = message.content.find(' ',0) + 1
+        input = message.content[i:]
         total_duration = 0
         songs_to_add = []
+        requestor = message.author
         print(input)
         if 'spotify' in input:
             song_list = spotify_parsing(input)
             for item in song_list:
-                video = ytvideo(item)
+                video = ytvideo(item, requestor)
                 total_duration += video.seconds
                 songs_to_add.append(video)
         elif '&list=' in input or '?list=' in input: #checks if input is a playlist
@@ -31,8 +34,7 @@ class mediaQueue():
             songs_to_add.extend(videolist.ytvideolist) #appends the list of ytvideo objects in videolist ot songs_to_add
             total_duration += videolist.seconds
         else:
-            video = ytvideo(input) #creates yt video object
-            await message.channel.send(f"Song found: {video.url}")
+            video = ytvideo(input, requestor) #creates yt video object
             total_duration += video.seconds
             songs_to_add.append(video) #appends to pending list of songs from the invocaiton of !play command
         print(total_duration)
@@ -54,10 +56,12 @@ class mediaQueue():
             pass
         await message.delete() #deletes the command message after responding
         for item in songs_to_add:
+            print(item.thumbnail)
             await self.yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
             self.playlist.append(item.title) #playlist is a normal list for normal access
         if len(songs_to_add) == 1:
-            await message.channel.send(f'```Song added to list peko~!:\n' + songs_to_add[0].title + ' [Duration: ' + self.duration_parsing(songs_to_add[0].seconds) + ']' + '[Requested by: ' + message.author.name + ']```')
+            embed = musicEmbed(songs_to_add[0], len(self.playlist))
+            await message.channel.send(embed = embed)
     classmethod
     async def clearCommand(self, client, message):
         while len(self.playlist) > 1: #remove everything from the asyncio playlist and normal playlist
@@ -76,7 +80,8 @@ class mediaQueue():
             for x in client.voice_clients:
                 return x.stop()
         elif message.content[0:5] == '!skip':  # uses lazy deletion in the regular list. actual skip is handled by the playback loop
-            entry = int(message.content[6:])
+            i = message.content.find(' ',0) + 1
+            entry = int(message.content[i:])
             self.playlist.pop(entry)
             await self.print_playlist(self.playlist, message.channel)
 
