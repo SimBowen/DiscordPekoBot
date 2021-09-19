@@ -95,9 +95,9 @@ def queueEmbed(queue):
     embed = discord.Embed(title=current_track.title,description=current_track.url, color=0xFF5733)
     embed.set_author(name=current_track.requestor, url="")
     embed.set_thumbnail(url=current_track.thumbnail)
-    songs = ''
-    duration = ''
-    requestor = ''
+    songs = '-'
+    duration = '-'
+    requestor = '-'
     for i in range(len(queue)):
         if i != 0:
             wrap = len(queue[i].title) // 25
