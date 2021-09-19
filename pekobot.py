@@ -5,7 +5,7 @@ import os
 import discord
 from discord.ext.tasks import loop
 from dotenv import load_dotenv
-from Media.MediaHandlers import yt_player
+from Media.MediaHandlers import pytube_player, yt_player
 from MessageHandlers.MessageParser import MessageParser
 
 load_dotenv()
@@ -49,5 +49,5 @@ async def yt_stopper():
             await client.voice_clients[0].disconnect()
 
 yt_stopper.start()
-client.loop.create_task(yt_player(parser, client)) #get the ytplay task to run in a loop
+client.loop.create_task(pytube_player(parser, client)) #get the ytplay task to run in a loop
 client.run(TOKEN)
