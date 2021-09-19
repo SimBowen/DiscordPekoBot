@@ -76,7 +76,6 @@ class mediaQueue():
     async def queueCommand(self,message):
         embed = queueEmbed(self.playlist)
         await message.channel.send(embed = embed)
-        await self.print_playlist(self.playlist, message.channel)
 
     async def skipCommand(self,client, message):
         if message.content == '!skip':  # stops the current song. playlist is handled by playback loop
