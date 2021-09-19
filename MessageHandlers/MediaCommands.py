@@ -1,10 +1,11 @@
-from MessageHandlers.embeds import musicEmbed
+from MessageHandlers.embeds import musicEmbed, queueEmbed
 from discord.ext.tasks import loop
 import asyncio
 from Media.spotify import spotify_parsing
 from Media.yt import ytplaylist
 from Media.yt import ytvideo
 from datetime import timedelta
+
 
 
 
@@ -58,7 +59,7 @@ class mediaQueue():
         for item in songs_to_add:
             print(item.thumbnail)
             await self.yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
-            self.playlist.append(item.title) #playlist is a normal list for normal access
+            self.playlist.append(item) #playlist is a normal list for normal access
         if len(songs_to_add) == 1:
             embed = musicEmbed(songs_to_add[0], len(self.playlist))
             await message.channel.send(embed = embed)
@@ -73,6 +74,8 @@ class mediaQueue():
         await message.channel.send('```Playlist cleared!```')
 
     async def queueCommand(self,message):
+        embed = queueEmbed(self.playlist)
+        await message.channel.send(embed = embed)
         await self.print_playlist(self.playlist, message.channel)
 
     async def skipCommand(self,client, message):
@@ -96,10 +99,10 @@ class mediaQueue():
         videos = ""
         for i in range(len(list)):
             if i == 0:
-                videos += '\nCurrent Song:\n' + self.playlist[i]
+                videos += '\nCurrent Song:\n' + self.playlist[i].title
                 videos += '\n\nPlaylist:'
             else:
-                videos += '\n' + str(i) + '. ' + self.playlist[i]
+                videos += '\n' + str(i) + '. ' + self.playlist[i].title
         await channel.send(f'```{videos}```')
 
     classmethod
@@ -107,7 +110,7 @@ class mediaQueue():
         return await self.yt_list.get()
     classmethod
     def firstTrack(self):
-        return self.playlist[0]
+        return self.playlist[0].title
     classmethod
     def popTrack(self):
         self.playlist.pop(0)
