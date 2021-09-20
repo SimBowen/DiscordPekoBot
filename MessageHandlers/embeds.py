@@ -91,15 +91,30 @@ def nowPlaying(ytvideo):
 
 
 def queueEmbed(queue):
-    current_track = queue[0]
-    embed = discord.Embed(title=current_track.title,description=current_track.url, color=0xFF5733)
-    embed.set_author(name=current_track.requestor, url="")
-    embed.set_thumbnail(url=current_track.thumbnail)
-    songs = '-'
-    duration = '-'
-    requestor = '-'
-    for i in range(len(queue)):
-        if i != 0:
+    try:
+        current_track = queue[0]
+        current_title = current_track.title
+        current_url = current_track.url
+        current_requestor = current_track.requestor
+        current_thumbnail = current_track.thumbnail
+    except:
+        current_title = '-'
+        current_url = '-'
+        current_requestor = '-'
+        current_thumbnail = '-'
+    embed = discord.Embed(title=current_title,description=current_url, color=0xFF5733)
+    embed.set_author(name=current_requestor, url="")
+    embed.set_thumbnail(url=current_thumbnail)
+
+    songs = ''
+    duration = ''
+    requestor = ''
+    if(len(queue) < 2):
+        songs = '-'
+        duration = '-'
+        requestor = '-'
+    else:
+        for i in range(len(queue)):
             wrap = len(queue[i].title) // 25
             songs += str(i) + '. ' + queue[i].title + '\n'
             duration += queue[i].time + '\n'             
@@ -111,3 +126,7 @@ def queueEmbed(queue):
     embed.add_field(name="Duration", value=duration, inline=True)
     embed.add_field(name="Requestor", value=requestor)
     return embed
+
+
+    
+
