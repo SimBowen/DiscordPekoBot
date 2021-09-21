@@ -1,3 +1,4 @@
+from MessageHandlers.embeds import cshelpEmbed, musichelpEmbed
 import random
 import discord
 from Media.MediaHandlers import play_mp3
@@ -65,3 +66,11 @@ async def reactCustom(message,emojiID):
 """Method to react to a message with a string and react to the response with standard emojis"""
 async def react(message,emoji):
     await message.add_reaction(emoji)
+
+
+async def helpCommand(message):
+   await message.channel.send(embed = musichelpEmbed())
+   await message.channel.send(embed = cshelpEmbed()) 
+
+async def cshelpCommand(message):
+   await message.channel.send(embed = cshelpEmbed()) 

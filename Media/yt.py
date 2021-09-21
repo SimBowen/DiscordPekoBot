@@ -20,6 +20,7 @@ class ytplaylist:
         self.ytvideolist = self.create_ytvideolist(self.urllist)
         self.seconds = self.duration(self.ytvideolist)
 
+    #calls the yt api to return a list of video urls
     classmethod
     def parse_playlist(self,url, max_size):
         url_list = []
@@ -41,6 +42,7 @@ class ytplaylist:
                     url_list.append(link)
         return url_list
 
+    #converts the list of urls into ytvideo objects
     classmethod
     def create_ytvideolist(self,urllist):
         ytvideolist = []
@@ -48,6 +50,7 @@ class ytplaylist:
             ytvideolist.append(ytvideo(link))
         return ytvideolist
 
+    #return the duration of all videos in seconds
     classmethod
     def duration(self,ytvideolist):
         duration = 0

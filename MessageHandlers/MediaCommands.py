@@ -61,7 +61,7 @@ class mediaQueue():
             await self.yt_list.put(item) #yt_list is an asyncio queue that cna be popped by the play loop
             self.playlist.append(item) #playlist is a normal list for normal access
         if len(songs_to_add) == 1:
-            embed = musicEmbed(songs_to_add[0], len(self.playlist))
+            embed = musicEmbed(songs_to_add[0], len(self.playlist) - 1)
             await message.channel.send(embed = embed)
     classmethod
     async def clearCommand(self, client, message):
@@ -73,19 +73,35 @@ class mediaQueue():
                 x.stop()
         await message.channel.send('```Playlist cleared!```')
 
+    classmethod
     async def queueCommand(self,message):
         embed = queueEmbed(self.playlist)
         await message.channel.send(embed = embed)
 
+    classmethod
     async def skipCommand(self,client, message):
-        if message.content == '!skip':  # stops the current song. playlist is handled by playback loop
+        if message.content == '!skip' or message.content == '!s':  # stops the current song. playlist is handled by playback loop
             for x in client.voice_clients:
                 return x.stop()
-        elif message.content[0:5] == '!skip':  # uses lazy deletion in the regular list. actual skip is handled by the playback loop
+        else:  # uses lazy deletion in the regular list. actual skip is handled by the playback loop
             i = message.content.find(' ',0) + 1
             entry = int(message.content[i:])
+            try:
+                self.playlist.pop(entry)
+                await self.queueCommand(message)
+            except:
+                await message.channel.send("Invalid selection!")
+    classmethod
+    async def removeCommand(self, message):
+        i = message.content.find(' ',0) + 1
+        entry = int(message.content[i:])
+        try:
             self.playlist.pop(entry)
-            await self.print_playlist(self.playlist, message.channel)
+            await self.queueCommand(message)
+        except:
+            await message.channel.send("Invalid selection!")
+
+    
 
     """Method to convert a time into a String"""
     classmethod

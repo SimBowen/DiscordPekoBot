@@ -74,6 +74,8 @@ async def raid(author, message):
 
 
 def musicEmbed(ytvideo, index):
+    if (index == 0):
+        index = "Now playing"
     embed = discord.Embed(title=ytvideo.title,description=ytvideo.url, color=0xFF5733)
     embed.set_author(name=ytvideo.requestor, url="")
     embed.set_thumbnail(url=ytvideo.thumbnail)
@@ -82,7 +84,7 @@ def musicEmbed(ytvideo, index):
     return embed
 
 def nowPlaying(ytvideo):
-    embed = discord.Embed(title=ytvideo.title,description=ytvideo.url, color=0xFF5733)
+    embed = discord.Embed(title=ytvideo.title,description=ytvideo.url, color=0x00FF00)
     embed.set_author(name="Now Playing:", url="")
     embed.set_thumbnail(url=ytvideo.thumbnail)
     embed.add_field(name="Duration", value=ytvideo.time, inline=True)
@@ -101,8 +103,8 @@ def queueEmbed(queue):
         current_title = '-'
         current_url = '-'
         current_requestor = '-'
-        current_thumbnail = '-'
-    embed = discord.Embed(title=current_title,description=current_url, color=0xFF5733)
+        current_thumbnail = 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Nothing.jpg'
+    embed = discord.Embed(title=current_title,description=current_url, color=0x0000FF)
     embed.set_author(name=current_requestor, url="")
     embed.set_thumbnail(url=current_thumbnail)
 
@@ -127,6 +129,22 @@ def queueEmbed(queue):
     embed.add_field(name="Requestor", value=requestor)
     return embed
 
+
+def musichelpEmbed():
+    embed = discord.Embed(title="Music Commands",description='', color=0x0099FF)
+    embed.add_field(name="Add song", value="!p/!play [Request]", inline=True)
+    embed.add_field(name="Skip next song", value="!s/!skip", inline=True)
+    embed.add_field(name="Skip song entry", value="!s/!skip/!r/!remove [entry]", inline=True)
+    embed.add_field(name="Clear playlist", value="!c/!clear", inline=True)
+    embed.add_field(name="Show playlist ", value="!q/!queue", inline=True)
+    embed.add_field(name="-", value="-", inline=True)
+    return embed
+
+def cshelpEmbed():
+    embed = discord.Embed(title="Counterside Commands",description='', color=0x0099FF)
+    embed.add_field(name="Character search", value="!cs [character]", inline=True)
+    embed.add_field(name="-", value="-", inline=True)
+    return embed
 
     
 
