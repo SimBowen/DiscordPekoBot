@@ -116,7 +116,7 @@ def queueEmbed(queue):
         duration = '-'
         requestor = '-'
     else:
-        for i in range(len(queue)):
+        for i in range(1, len(queue)):
             wrap = len(queue[i].title) // 25
             songs += str(i) + '. ' + queue[i].title + '\n'
             duration += queue[i].time + '\n'             

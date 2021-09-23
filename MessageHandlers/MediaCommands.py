@@ -1,3 +1,4 @@
+from MessageHandlers.MessageReactions import deleteMP3
 from MessageHandlers.embeds import musicEmbed, queueEmbed
 from discord.ext.tasks import loop
 import asyncio
@@ -72,6 +73,7 @@ class mediaQueue():
         for x in client.voice_clients: #this removes the final item from asyncio queue
                 x.stop()
         await message.channel.send('```Playlist cleared!```')
+        deleteMP3()
 
     classmethod
     async def queueCommand(self,message):

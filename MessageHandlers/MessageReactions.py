@@ -1,3 +1,4 @@
+import os
 from MessageHandlers.embeds import cshelpEmbed, musichelpEmbed
 import random
 import discord
@@ -74,3 +75,9 @@ async def helpCommand(message):
 
 async def cshelpCommand(message):
    await message.channel.send(embed = cshelpEmbed()) 
+
+async def deleteMP3(self):
+    if os.path.exists("temp.mp3"):
+        os.remove("temp.mp3")
+    else:
+        print("The mp3 does not exist!") 
