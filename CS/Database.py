@@ -58,9 +58,12 @@ class CS_Database:
     classmethod
     async def searchCommand(self, message):
         search = message.content[4:].lower()
-        results = self.charaSearch(search)
-        for chr in results:
-            await message.channel.send(embed = chr.embedconstructor())
+        try:
+            results = self.charaSearch(search)
+            for chr in results:
+                await message.channel.send(embed = chr.embedconstructor())
+        except:
+            message.channel.send("Invalid search!")
     
 
 
